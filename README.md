@@ -178,7 +178,9 @@ I decided to try an approach suggested in http://blog.rtwilson.com/how-to-make-y
 import mock
 
 MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate',
-                'pylatex', 'openpyxl']
+                'pylatex', 'openpyxl',
+                'pylatex.Document', 
+                ]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 ```
@@ -200,5 +202,8 @@ will fail and it is an ugly process to recover from it.  So make sure that the
 time since last built is as you expect it:
 
 ![alt text](assets/rtd03.png)
+
+Sometimes, it takes a relatively long time for this time to reset to your last commit.
+Once it was 15 minutes for me.
 
 If all works well, the documentation will be created on http://hgdemo.readthedocs.io/

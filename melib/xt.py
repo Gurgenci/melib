@@ -5,12 +5,13 @@
 """
 
 import pylatex
+import matplotlib
 #from pylatex.utils import italic, bold
 from datetime import date
-from pylatex import Document, Section, Subsection, Tabular, Math, TikZ, Axis, \
-    Plot, Figure, Matrix, Alignat, Quantity, MiniPage, LargeText, LineBreak, \
-    MediumText, PageStyle, Head, simple_page_number, Foot
-import matplotlib.image as mpimg
+# from pylatex import Document, Section, Subsection, Tabular, Math, TikZ, Axis, \
+#     Plot, Figure, Matrix, Alignat, Quantity, MiniPage, LargeText, LineBreak, \
+#     MediumText, PageStyle, Head, simple_page_number, Foot
+# import matplotlib.image as mpimg
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -364,7 +365,7 @@ def imgplot(X, Y, XXYY, cs='b-', imgfile="", ax=[], xticks=[], yticks=[]):
         y = y2-(Y2-Y)/(Y2-Y1)*(y2-y1)
         return (x, y)
     if ax == []:
-        img = mpimg.imread(imgfile)
+        img = matplotlib.image.mpimg.imread(imgfile)
         f1 = plt.figure()
         ax = f1.add_subplot(111)
         ax.imshow(img)
