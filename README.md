@@ -118,3 +118,25 @@ The local addressing is all with respect to the `docs` folder.
 This completes the local documentation.  Let us now generate a `github` repository.
 
 # Construct remote repository #
+`git add -A`<br>
+`git commit -am` 'the first commit'<br>
+`git branch -M main`<br>
+`git remote add origin https://github.com/Gurgenci/melib.git`<br>
+`git push -u origin main`
+
+# Remote documentation #
+I will generate documentation using `ReadtheDocs`.  For a package like `melib` that
+needs to import other packages, the dependencies need to be stated up front.  Otherwise,
+`ReadtheDocs` will fail.
+
+I create a new file called `requirements.txt` in the `docs` folder:
+```
+numpy>=1.0
+pylatex>=1.0
+openpyxl>=1.0
+```
+
+* Log in to `ReadtheDocs.org`
+* Import a repository (melib)
+
+The documentation is created: http://hgdemo.readthedocs.io/
