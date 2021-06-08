@@ -1,0 +1,1436 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>melib.xt &#8212; melib June 2021 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for melib.xt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    **xt.py**</span>
+
+<span class="sd">    Routines to create markdown documents for Jupyter notebooks, PDF files, and some other useful stuff</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pylatex.utils</span> <span class="kn">import</span> <span class="n">italic</span><span class="p">,</span> <span class="n">bold</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">pylatex</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Section</span><span class="p">,</span> <span class="n">Subsection</span><span class="p">,</span> <span class="n">Tabular</span><span class="p">,</span> <span class="n">Math</span><span class="p">,</span> <span class="n">TikZ</span><span class="p">,</span> <span class="n">Axis</span><span class="p">,</span> \
+    <span class="n">Plot</span><span class="p">,</span> <span class="n">Figure</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">,</span> <span class="n">Alignat</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">MiniPage</span><span class="p">,</span> <span class="n">LargeText</span><span class="p">,</span> <span class="n">LineBreak</span><span class="p">,</span> \
+    <span class="n">MediumText</span><span class="p">,</span> <span class="n">PageStyle</span><span class="p">,</span> <span class="n">Head</span><span class="p">,</span> <span class="n">simple_page_number</span><span class="p">,</span> <span class="n">Foot</span>
+<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copyfile</span>
+<span class="c1">#</span>
+<span class="n">WINDOWS</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># If you are not using WINDOWS, make this False</span>
+<span class="c1">#</span>
+<span class="n">EXAMPLE</span><span class="o">=</span><span class="kc">False</span>
+
+<span class="k">def</span> <span class="nf">iswindows</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">WINDOWS</span>
+    <span class="n">WINDOWS</span> <span class="o">=</span> <span class="n">q</span>  <span class="c1"># True or False; will be set at the notebook entry</span>
+
+<span class="c1"># Combine the folder and the file names into a single path string</span>
+<span class="c1"># This will be differently for MAC and WINDOWS</span>
+<span class="c1"># The foldername is from the root folder for the zip file pack I distribute</span>
+<span class="c1"># There are no back or forward slashes in the folder name, e.g. &quot;pics&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">ff2p</span><span class="p">(</span><span class="n">foldername</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">WINDOWS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">foldername</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">filename</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">foldername</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">filename</span>
+<span class="c1"># ZIP functions will only run on my computer</span>
+
+
+<div class="viewcode-block" id="mdzip"><a class="viewcode-back" href="../../api.html#melib.xt.mdzip">[docs]</a><span class="k">def</span> <span class="nf">mdzip</span><span class="p">(</span><span class="n">zipfile</span><span class="p">,</span> <span class="n">listfile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates a zip archive of all components used in the notebook</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        zipfile  : The name of the zip file to be created</span>
+<span class="sd">        listfile : The text file containing the file names to be archived (optional)</span>
+
+<span class="sd">    For example,</span>
+<span class="sd">        mdzip(&quot;L10&quot;) -- Will archive the list in &quot;L10_zip.txt&quot; into &quot;L10.zip&quot; </span>
+<span class="sd">        mdzip(&quot;xxxx&quot;, &quot;zzzz.txt&quot;) -- Will archive the list in &quot;zzzz.txt&quot; into &quot;xxxx.zip&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">my_makezip</span><span class="p">(</span><span class="n">ziplist</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">libfolder</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;H:\My Documents\python&quot;</span>
+        <span class="n">libraryfiles</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;xt.py&quot;</span><span class="p">,</span> <span class="s2">&quot;excel.py&quot;</span><span class="p">,</span> <span class="s2">&quot;library.py&quot;</span><span class="p">]</span>
+        <span class="n">zipobj</span> <span class="o">=</span> <span class="n">ZipFile</span><span class="p">(</span><span class="n">zipfile</span><span class="o">+</span><span class="s2">&quot;.zip&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ziplist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">libraryfiles</span><span class="p">:</span>
+                    <span class="n">copyfile</span><span class="p">(</span><span class="n">libfolder</span><span class="o">+</span><span class="sa">r</span><span class="s2">&quot;\</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                    <span class="n">zipobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">zipobj</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">zipobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c1">#</span>
+    <span class="k">if</span> <span class="n">listfile</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+        <span class="n">listfile</span><span class="o">=</span><span class="n">zipfile</span><span class="o">+</span><span class="s2">&quot;_zip.txt&quot;</span>
+    <span class="n">fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">listfile</span><span class="p">)</span>
+    <span class="n">ziplist</span> <span class="o">=</span> <span class="n">fdx</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">my_makezip</span><span class="p">(</span><span class="n">ziplist</span><span class="p">,</span> <span class="n">zipfile</span><span class="p">)</span></div>
+
+
+<span class="n">FZIP</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">NOTEBOOK</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="n">ZIPFILES</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">EQNUMS</span><span class="o">=</span><span class="p">{}</span>  <span class="c1"># Equation References</span>
+
+
+<div class="viewcode-block" id="mdxziplist"><a class="viewcode-back" href="../../api.html#melib.xt.mdxziplist">[docs]</a><span class="k">def</span> <span class="nf">mdxziplist</span><span class="p">(</span><span class="n">files</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; It adds `files` to the zip listfile (see mdzip())</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        files (string array): Names of files to archive, e.g. `[&quot;xt.py&quot;, &quot;dat\\mats.xlsx&quot;]`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">FZIP</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ZIPFILES</span><span class="p">:</span>
+                <span class="n">ZIPFILES</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">FZIP</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="n">FZIP</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mdxzipopen"><a class="viewcode-back" href="../../api.html#melib.xt.mdxzipopen">[docs]</a><span class="k">def</span> <span class="nf">mdxzipopen</span><span class="p">(</span><span class="n">notebook</span><span class="p">,</span> <span class="n">libfiles</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Creates the zip file list and insert the &#39;libfiles&#39; into it</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        notebook : Usually the name of the notebook but could be any string, e.g. &quot;L20&quot;</span>
+<span class="sd">        libfiles : File names as an array of strings, e.g. [&quot;xt.py&quot;, &quot;excel.py&quot;]</span>
+
+<span class="sd">    The name of the list file will be `notebook+&quot;_zip.txt&quot;`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">global</span> <span class="n">FZIP</span><span class="p">,</span> <span class="n">ZIPFILES</span>
+    <span class="n">FZIP</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">NOTEBOOK</span><span class="o">+</span><span class="s2">&quot;_zip.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+    <span class="n">ZIPFILES</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">filelist</span> <span class="o">=</span> <span class="n">libfiles</span><span class="o">+</span><span class="p">[</span><span class="n">notebook</span><span class="o">+</span><span class="s2">&quot;.ipynb&quot;</span><span class="p">,</span> <span class="n">notebook</span><span class="o">+</span><span class="s2">&quot;.html&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;common.py&quot;</span><span class="p">):</span>
+        <span class="n">filelist</span> <span class="o">+=</span> <span class="p">[</span><span class="s2">&quot;common.py&quot;</span><span class="p">]</span>
+    <span class="n">popfile</span> <span class="o">=</span> <span class="n">notebook</span><span class="o">+</span><span class="s2">&quot;_pop.txt&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">popfile</span><span class="p">):</span>
+        <span class="n">filelist</span> <span class="o">+=</span> <span class="p">[</span><span class="n">popfile</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+        <span class="n">FZIP</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">FZIP</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mdxzipclose"><a class="viewcode-back" href="../../api.html#melib.xt.mdxzipclose">[docs]</a><span class="k">def</span> <span class="nf">mdxzipclose</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot; Do not use this function.</span>
+<span class="sd">        It adds double back slash to the zip list file and it confuses zip file creation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">FZIP</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">FZIP</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<span class="c1"># Do not use this function because it adds double back slash to the zip list file,</span>
+<span class="c1">#  which confuses zip file creation</span>
+
+
+<span class="k">def</span> <span class="nf">img2zip</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
+    <span class="n">top</span> <span class="o">=</span> <span class="s2">&quot;../&quot;</span>
+    <span class="k">if</span> <span class="n">top</span> <span class="ow">in</span> <span class="n">img</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">top</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mdxziplist</span><span class="p">([</span><span class="n">s</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mdxziplist</span><span class="p">([</span><span class="n">img</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">imgshow</span><span class="p">(</span><span class="n">imgfile</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="n">img2zip</span><span class="p">(</span><span class="n">imgfile</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">imgfile</span>
+    <span class="k">return</span> <span class="s1">&#39;&lt;img src=&quot;</span><span class="si">%s</span><span class="s1">&quot; alt=&quot;</span><span class="si">%s</span><span class="s1">&quot;&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">imgfile</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">urlref</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">hover</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">hover</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">hover</span> <span class="o">=</span> <span class="n">title</span>
+    <span class="k">return</span> <span class="s1">&#39;&lt;a href=&quot;</span><span class="si">%s</span><span class="s1">&quot; target=&quot;_blank&quot; title=&quot;</span><span class="si">%s</span><span class="s1">&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/a&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">hover</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">imgref</span><span class="p">(</span><span class="n">imgfile</span><span class="p">,</span> <span class="n">imgtext</span><span class="p">):</span>
+    <span class="c1">#    img2zip(imgfile)</span>
+    <span class="k">return</span> <span class="s1">&#39;&lt;a href=&quot;</span><span class="si">%s</span><span class="s1">&quot; onclick=&quot;javascript:void window.open(</span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\&#39;</span><span class="s1">1556185057675</span><span class="se">\&#39;</span><span class="s1">,</span><span class="se">\</span>
+<span class="se">\&#39;</span><span class="s1">width=600,height=300,toolbar=0,menubar=0,location=0,status=1,scrollbars=0,resizable=1,left=300,top=300,fullscreen=0</span><span class="se">\&#39;</span><span class="s1">);</span><span class="se">\</span>
+<span class="s1">return false;&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/a&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">imgfile</span><span class="p">,</span> <span class="n">imgfile</span><span class="p">,</span> <span class="n">imgtext</span><span class="p">)</span>
+<span class="c1">#    return &#39;&lt;a href=&quot;%s&quot; onclick=&quot;javascript:void window.open(\&#39;%s\&#39;,\&#39;1556185057675\&#39;,\</span>
+<span class="c1"># \&#39;toolbar=0,menubar=0,location=0,status=1,scrollbars=0,resizable=1,left=300,top=300,fullscreen=0\&#39;);\</span>
+<span class="c1"># return false;&quot;&gt;%s&lt;/a&gt;&#39;%(imgfile, imgfile, imgtext)</span>
+
+<span class="c1"># Example &#39;s&#39;</span>
+<span class="c1">#  When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are</span>
+<span class="c1">#  $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</span>
+
+
+<span class="k">def</span> <span class="nf">sjax</span><span class="p">(</span><span class="n">stext</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">stext</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\</span>
+<span class="s1">&lt;!DOCTYPE html&gt;</span><span class="se">\</span>
+<span class="s1">&lt;html&gt;</span><span class="se">\</span>
+<span class="s1">&lt;head&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;meta charset=&quot;utf-8&quot;&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;title&gt;MathJax&lt;/title&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;script type=&quot;text/javascript&quot; async</span><span class="se">\</span>
+<span class="s1">  src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async&gt;</span><span class="se">\</span>
+<span class="s1">&lt;/script&gt;</span><span class="se">\</span>
+<span class="s1">&lt;/head&gt;</span><span class="se">\</span>
+<span class="s1">&lt;body&gt;&#39;</span>
+<span class="c1">#</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\</span>
+<span class="s1">&lt;!DOCTYPE html&gt;</span><span class="se">\</span>
+<span class="s1">&lt;html&gt;</span><span class="se">\</span>
+<span class="s1">&lt;head&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;meta charset=&quot;utf-8&quot;&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;title&gt;MathJax&lt;/title&gt;</span><span class="se">\</span>
+<span class="s1">  &lt;script type=&quot;text/javascript&quot; async</span><span class="se">\</span>
+<span class="s1">  src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async&gt;</span><span class="se">\</span>
+<span class="s1">&lt;/script&gt;</span><span class="se">\</span>
+<span class="s1">&lt;/head&gt;</span><span class="se">\</span>
+<span class="s1">&lt;body&gt;</span><span class="se">\</span>
+<span class="s1">&lt;p&gt;</span><span class="si">%s</span><span class="se">\</span>
+<span class="s1">&lt;/p&gt;</span><span class="se">\</span>
+<span class="s1">&lt;/body&gt;</span><span class="se">\</span>
+<span class="s1">&lt;/html&gt;&#39;</span> <span class="o">%</span> <span class="n">stext</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<div class="viewcode-block" id="openplot"><a class="viewcode-back" href="../../api.html#melib.xt.openplot">[docs]</a><span class="k">def</span> <span class="nf">openplot</span><span class="p">(</span><span class="n">figno</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arguments</span>
+<span class="sd">        `figno` : Figure numbers</span>
+
+<span class="sd">        `aspect` : Aspect ratio, e.g. 0.5 for a rectangle width=2*height</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">    Returns (f1, ax)</span>
+<span class="sd">    </span>
+<span class="sd">        f1 = Pointer to the figure (can be used to save the figure, e.g. f1.savefig(&quot;myfigure.png&quot;) </span>
+<span class="sd">        </span>
+<span class="sd">        ax = Pointer to the plot axes (use this to plot, e.g. ax.plot((x, y, &quot;r&quot;, label=&quot;Y&quot;)))</span>
+
+<span class="sd">    **Example**</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; x=np.arange(0,10,0.01)</span>
+<span class="sd">        &gt;&gt;&gt; y=np.sin(x)</span>
+<span class="sd">        &gt;&gt;&gt; (f1,ax)=openplot(1,0.5)</span>
+<span class="sd">        &gt;&gt;&gt; ax.plot(x,y,&quot;m&quot;,label=&quot;sine&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; plotanno(ax,xlabel=&quot;X variable&quot;, ylabel=&quot;sin(x)&quot;, xlim=[1,9], ylim=[0, 1.0], grid=&quot;on&quot;, legendloc=&quot;upper right&quot;, title=&quot;Example - y=sin(x)&quot;)</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1">#    f1=plt.figure()</span>
+    <span class="k">if</span> <span class="n">aspect</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figaspect</span><span class="p">(</span><span class="n">aspect</span><span class="p">)</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">f1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span></div>
+<span class="c1"># For example</span>
+<span class="c1">#    (fig,ax)=openplot(1)</span>
+<span class="c1">#    ax.plot(x, y, &quot;r&quot;, label=&quot;Y&quot;)</span>
+<span class="c1">#    ax.plot(x, z, &quot;b&quot;, label=&quot;Z&quot;)</span>
+<span class="c1">#    plotanno(ax,xlabel=&quot;Length, m&quot;, ylabel=&quot;Temperatures&quot;, legendloc=&quot;upper right&quot;)</span>
+<span class="c1">#    fig.savefig(filename)</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="plotanno"><a class="viewcode-back" href="../../api.html#melib.xt.plotanno">[docs]</a><span class="k">def</span> <span class="nf">plotanno</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[],</span> <span class="n">grid</span><span class="o">=</span><span class="s2">&quot;on&quot;</span><span class="p">,</span>
+             <span class="n">legendloc</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        For the matplotlib figure axis pointer ``ax``:</span>
+<span class="sd">            Add axis labels (``xlabel`` and ``ylabel`` )</span>
+<span class="sd">            Axis limits, e.g. ``xlim`` (=``[xmin, xmax]`` )</span>
+<span class="sd">            Location for the legend , eg &quot;upper right&quot;</span>
+<span class="sd">            Turn the grid lines on and off</span>
+<span class="sd">            and a figure title</span>
+<span class="sd">            </span>
+<span class="sd">        **Example**</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; x=np.arange(0,10,0.01)</span>
+<span class="sd">        &gt;&gt;&gt; y=np.sin(x)</span>
+<span class="sd">        &gt;&gt;&gt; (f1,ax)=openplot(1,0.5)</span>
+<span class="sd">        &gt;&gt;&gt; ax.plot(x,y,&quot;m&quot;,label=&quot;sine&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; plotanno(ax,xlabel=&quot;X variable&quot;, ylabel=&quot;sin(x)&quot;, xlim=[1,9], ylim=[0, 1.0], grid=&quot;on&quot;, legendloc=&quot;upper right&quot;, title=&quot;Example - y=sin(x)&quot;)</span>
+
+<span class="sd">            </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ylim</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xlim</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xlabel</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ylabel</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">ylabel</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">grid</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">grid</span> <span class="o">==</span> <span class="s2">&quot;on&quot;</span> <span class="ow">or</span> <span class="n">grid</span> <span class="o">==</span> <span class="s2">&quot;off&quot;</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">legendloc</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="n">legendloc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span></div>
+<span class="c1"># EXAMPLE=&quot;openplot&quot;</span>
+<span class="k">if</span> <span class="n">EXAMPLE</span><span class="o">==</span><span class="s2">&quot;openplot&quot;</span><span class="p">:</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">f1</span><span class="p">,</span><span class="n">ax</span><span class="p">)</span><span class="o">=</span><span class="n">openplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s2">&quot;m&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;sine&quot;</span><span class="p">)</span>
+    <span class="n">plotanno</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;X variable&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;sin(x)&quot;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">grid</span><span class="o">=</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">legendloc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example - y=sin(x)&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">saveplot</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">plotfilename</span><span class="o">=</span><span class="n">ff2p</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">plotfilename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">plotfilename</span>
+
+
+
+<div class="viewcode-block" id="imgplot"><a class="viewcode-back" href="../../api.html#melib.xt.imgplot">[docs]</a><span class="k">def</span> <span class="nf">imgplot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">XXYY</span><span class="p">,</span> <span class="n">cs</span><span class="o">=</span><span class="s1">&#39;b-&#39;</span><span class="p">,</span> <span class="n">imgfile</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="p">[],</span> <span class="n">xticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        This function is used to superimpose my curve on a chart image from</span>
+<span class="sd">        a reference.  The image should be the box only.</span>
+
+<span class="sd">        ``X`` , ``Y``   The data to be plotted (the same units as on the chart image)</span>
+<span class="sd">        </span>
+<span class="sd">        ``XXYY``        The axis limits [[xmin, xmax], [ymin, ymax]] (from the reference image)</span>
+<span class="sd">        </span>
+<span class="sd">        ``cs``          Plot line descriptor, e.g. ``&quot;b--&quot;``</span>
+<span class="sd">        </span>
+<span class="sd">        ``imgfile``     The name of the output, e.g. ``r&quot;pics\Meshram_Fig6b.png&quot;``</span>
+<span class="sd">        </span>
+<span class="sd">        ``ax``          This should not be included at first call.  It is used to add curves later.</span>
+<span class="sd">        </span>
+<span class="sd">        ``xticks``      x-axis tick positions you want to see, e.g. [&quot;4000&quot;, &quot;midpoint&quot;, &quot;26000&quot;]</span>
+<span class="sd">        </span>
+<span class="sd">        ``yticks``      y-axis tick positions, e.g. [&quot;ten&quot;, &quot;forty&quot;, &quot;seventy&quot;, &quot;hundred&quot;]</span>
+<span class="sd">        </span>
+
+<span class="sd">        The function returns ``(figno, ax)``. </span>
+<span class="sd">        The ``ax`` can be used to add more y(x) curves:</span>
+
+<span class="sd">            e.g. imgplot(X2, Y2, XXYY, &quot;r--&quot;, ax=ax)</span>
+<span class="sd">            </span>
+<span class="sd">            The ``XXYY`` in the second call should be the same as in the first</span>
+<span class="sd">            </span>
+<span class="sd">            The ``ax`` in the second call is the same &#39;ax&#39; returned by the first call</span>
+
+<span class="sd">        The ``figno`` can be used by the calling figure to save or to clear the figure</span>
+
+<span class="sd">    **Example**</span>
+
+<span class="sd">        &gt;&gt;&gt; x = np.log10(np.arange(10, 10000, 100))</span>
+<span class="sd">        &gt;&gt;&gt; y = x-np.log10(1.0)</span>
+<span class="sd">        &gt;&gt;&gt; XXYY = [[1, np.log10(50000.0)], [-2, 4]]</span>
+<span class="sd">        &gt;&gt;&gt; (f, ax) = imgplot(x, y, XXYY, cs=&#39;r-&#39;,imgfile=r&quot;ashby_strength_density_chart_no_axes.png&quot;,xticks=[10, &quot;mid&quot;, 100], yticks=[0.01, 10000])</span>
+<span class="sd">        &gt;&gt;&gt; imgplot(x, x-np.log10(2.0), XXYY, &#39;b&#39;, ax=ax)</span>
+<span class="sd">        &gt;&gt;&gt; imgplot(x, x-np.log10(10.0), XXYY, &#39;k&#39;, ax=ax)</span>
+<span class="sd">        &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    This example draws lines on the following reference chart:</span>
+<span class="sd">        </span>
+<span class="sd">        .. image::  ../../assets/ashby_strength_density_chart.png</span>
+<span class="sd">        </span>
+<span class="sd">    To create the following plot:</span>
+<span class="sd">        </span>
+<span class="sd">        .. image:: ../../assets/imgplot.png</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">ptransform</span><span class="p">(</span><span class="n">XY</span><span class="p">,</span> <span class="n">XXYY</span><span class="p">,</span> <span class="n">xxyy</span><span class="p">):</span>
+        <span class="n">X1</span> <span class="o">=</span> <span class="n">XXYY</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">X2</span> <span class="o">=</span> <span class="n">XXYY</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Y1</span> <span class="o">=</span> <span class="n">XXYY</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Y2</span> <span class="o">=</span> <span class="n">XXYY</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">xxyy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">xxyy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="n">xxyy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="n">xxyy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">XY</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">XY</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">-</span><span class="n">X1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">X2</span><span class="o">-</span><span class="n">X1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">+</span><span class="n">x1</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y2</span><span class="o">-</span><span class="p">(</span><span class="n">Y2</span><span class="o">-</span><span class="n">Y</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">Y2</span><span class="o">-</span><span class="n">Y1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ax</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">imgfile</span><span class="p">)</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">f1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+    <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+    <span class="n">xxyy</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">),</span> <span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">)]</span>
+    <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="n">ptransform</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">),</span> <span class="n">XXYY</span><span class="p">,</span> <span class="n">xxyy</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">xticks</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
+        <span class="n">xtickpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">x1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">xtickpos</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">dx</span>
+<span class="c1">#        ax.set_xticks([x1, x2])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">xtickpos</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">yticks</span> <span class="o">!=</span> <span class="p">[]:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">yticks</span><span class="p">)</span>
+        <span class="n">ytickpos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">ytickpos</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">y1</span><span class="o">-</span><span class="n">k</span><span class="o">*</span><span class="n">dy</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">ytickpos</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">yticks</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="kc">False</span><span class="p">:</span>  <span class="c1"># Test</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">XXYY</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">50000.0</span><span class="p">)],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+    <span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">imgplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">XXYY</span><span class="p">,</span> <span class="n">cs</span><span class="o">=</span><span class="s1">&#39;r-&#39;</span><span class="p">,</span>
+                      <span class="n">imgfile</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;H:\My Documents\_Acad\courses\mech2100\2020\web&quot;</span> <span class="o">+</span>
+                      <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">pics</span><span class="se">\\</span><span class="s2">ashby_strength_density_chart_no_axes.png&quot;</span><span class="p">,</span>
+                      <span class="n">xticks</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;mid&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">10000</span><span class="p">])</span>
+    <span class="n">imgplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">2.0</span><span class="p">),</span> <span class="n">XXYY</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">imgplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">XXYY</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">poptext</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>  <span class="c1"># Process pop text, e.g. equations etc</span>
+    <span class="n">sa</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="n">sout</span> <span class="o">=</span> <span class="n">sjax</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">sout</span> <span class="o">+=</span> <span class="n">sa</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">sa</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">sout</span> <span class="o">+=</span> <span class="n">sa</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">sout</span>
+
+
+<span class="k">def</span> <span class="nf">eqnumber</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">EQNUMS</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+
+<div class="viewcode-block" id="mdx"><a class="viewcode-back" href="../../api.html#melib.xt.mdx">[docs]</a><span class="k">class</span> <span class="nc">mdx</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        ``mdx`` is a pointer to a markdown file.  I use it in creating lecture</span>
+<span class="sd">        notes.  A typical notebook have an iniialisation cell and then several</span>
+<span class="sd">        chapter cells.  </span>
+<span class="sd">        </span>
+<span class="sd">        The structures for these cells are given below.  Create a notebook </span>
+<span class="sd">        named &quot;XXXX.ipynb&quot; and copy and paste the following code segments </span>
+<span class="sd">        into that notebook as separate cells to create an example notebook </span>
+<span class="sd">        generated using the ``mdx`` class.</span>
+<span class="sd">        </span>
+<span class="sd">        **Why should you use `` mdx `` ?**</span>
+<span class="sd">        </span>
+<span class="sd">        I found it clumsy to create markdown files with interactive live </span>
+<span class="sd">        python code snippets in it when using standard markdown only.</span>
+<span class="sd">        </span>
+<span class="sd">        Using the class ``mdx``, all cells in the notebook </span>
+<span class="sd">        can be code cells and the whole notebook can run as a single program.</span>
+<span class="sd">        </span>
+<span class="sd">        The cell contents are created by using the ``mdx.write()`` method.  There </span>
+<span class="sd">        are special codes starting with ``:::`` that can indicate headers, equations, </span>
+<span class="sd">        insert images, and many other things.  See the write-up for the ``write`` </span>
+<span class="sd">        method.</span>
+<span class="sd">        </span>
+<span class="sd">        **Initialisation Cell**</span>
+<span class="sd">        </span>
+<span class="sd">        This will be the first cell in the ``ipynb`` file and it will have the </span>
+<span class="sd">        following structure.  This is initialisation for a notebook with three chapter</span>
+<span class="sd">        cells and one reference cell at the end.</span>
+<span class="sd">            </span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import math</span>
+<span class="sd">            import numpy as np</span>
+<span class="sd">            from IPython.display import Markdown as md</span>
+<span class="sd">            import matplotlib.pyplot as plt</span>
+<span class="sd">            import random</span>
+<span class="sd">            import sys</span>
+<span class="sd">            import os</span>
+<span class="sd">            from datetime import datetime, date</span>
+<span class="sd">            # import other packages as required</span>
+<span class="sd">            # ...</span>
+<span class="sd">            # ...</span>
+<span class="sd">            Chapter=&quot;XXXX&quot;  # or any other name</span>
+<span class="sd">            YEAR=2021</span>
+<span class="sd">            TOC=[&quot;Chapter 1&quot;, &quot;Chapter 2&quot;, &quot;Chapter 3&quot;, &quot;References&quot;]</span>
+<span class="sd">            #</span>
+<span class="sd">            SECTION=0</span>
+<span class="sd">            MAKEZIP=True  # A zip file will be generated  (False otherwise)</span>
+<span class="sd">            #</span>
+<span class="sd">            # Module libraries</span>
+<span class="sd">            sys.path.insert(0,r&quot;H:\My Documents\python&quot;)  # provide full path</span>
+<span class="sd">            sys.path.insert(0, r&quot;H:\My Documents\melib_project\melib&quot;)  # provide full path</span>
+<span class="sd">            #</span>
+<span class="sd">            from xt import mdx, engfmt, mdxzipopen, mdzip, iswindows, openplot, plotanno</span>
+<span class="sd">            from excel import Xcel</span>
+<span class="sd">            LIBFILES=[&quot;xt.py&quot;, &quot;library.py&quot;, &quot;excel.py&quot;]</span>
+<span class="sd">            #</span>
+<span class="sd">            if MAKEZIP: mdxzipopen(Chapter, LIBFILES)</span>
+<span class="sd">            #</span>
+<span class="sd">            MD=mdx(Chapter,0,title=&quot;Example Notebook&quot;)  # The markdown file pointer</span>
+<span class="sd">            MD.write(&quot;Created on 6 April 2021.   Last Update - &quot;+date.today().strftime(&quot;%d/%m/%Y&quot;))</span>
+<span class="sd">            MD.toc(TOC,&quot;&quot;)  # Creates the table contents</span>
+<span class="sd">            MD.write(&quot;* The notebook source file is `%s.ipynb`&quot;%Chapter)</span>
+<span class="sd">            #</span>
+<span class="sd">            md(MD.out())  # End of the initiation segment</span>
+
+<span class="sd">        The following is what you need to generate an HTML page from this notebook.</span>
+<span class="sd">        </span>
+<span class="sd">        ::</span>
+<span class="sd">            </span>
+<span class="sd">            jupyter nbconvert XXXX.ipynb --no-input --to html</span>
+<span class="sd">            </span>
+<span class="sd">        </span>
+<span class="sd">        **Chapter 1**</span>
+<span class="sd">        </span>
+<span class="sd">        This is the first chapter in the notebook following the initial cell. </span>
+<span class="sd">        All contents will be inserted using the ``MD.write()`` function.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            SECTION+=1</span>
+<span class="sd">            MD=mdx(Chapter, SECTION, TOC[SECTION-1])  # create the chapter file</span>
+<span class="sd">            MD.write(&quot;\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;... blah blah blah :::&quot;)</span>
+<span class="sd">            MD.write(&quot;... even more blah blah blah :::&quot;)</span>
+<span class="sd">            MD.write(&quot;\\n\\n&quot;)</span>
+<span class="sd">            md(MD.out())            # close the chapter file</span>
+<span class="sd">            </span>
+<span class="sd">        **Chapter 2**</span>
+<span class="sd">        </span>
+<span class="sd">        This is the second chapter in the notebook following the initial cell. </span>
+<span class="sd">        All contents will be inserted using the ``MD.write()`` function.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            SECTION+=1</span>
+<span class="sd">            MD=mdx(Chapter, SECTION, TOC[SECTION-1])  # create the chapter file</span>
+<span class="sd">            MD.write(&quot;\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;... blah blah blah :::&quot;)</span>
+<span class="sd">            MD.write(&quot;... even more blah blah blah :::&quot;)</span>
+<span class="sd">            MD.write(&quot;\\n\\n&quot;)</span>
+<span class="sd">            md(MD.out())            # close the chapter file</span>
+<span class="sd">            </span>
+<span class="sd">        **Chapter 3**</span>
+<span class="sd">        </span>
+<span class="sd">        This is the third chapter in the notebook following the initial cell. </span>
+<span class="sd">        All contents will be inserted using the ``MD.write()`` function.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            SECTION+=1</span>
+<span class="sd">            MD=mdx(Chapter, SECTION, TOC[SECTION-1])  # create the chapter file</span>
+<span class="sd">            MD.write(&quot;\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;... blah blah blah :::&quot;)</span>
+<span class="sd">            MD.write(&quot;... even more blah blah blah :::&quot;)</span>
+<span class="sd">            MD.write(&quot;\\n\\n&quot;)</span>
+<span class="sd">            md(MD.out())            # close the chapter file</span>
+<span class="sd">            </span>
+<span class="sd">        One can have an arbitrary number of chapters.  It is preferred to </span>
+<span class="sd">        complete with one last segment on references:</span>
+
+<span class="sd">        **The last content cell that contains the bibliography (optional)**</span>
+<span class="sd">        </span>
+<span class="sd">        ::</span>
+<span class="sd">        </span>
+<span class="sd">            SECTION=len(TOC)</span>
+<span class="sd">            MD=mdx(Chapter, SECTION, TOC[SECTION-1])</span>
+<span class="sd">            MD.write(&quot;Anderson, P., Fouad, A., John Wiley &amp; Sons, publisher, Institute of Electrical Electronics Engineers, &amp; \</span>
+<span class="sd">            IEEE Xplore , distributor. (2002). Power system control and stability (2nd ed., IEEE Press power engineering series). \</span>
+<span class="sd">            Piscataway, New Jersey: IEEE Press\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;Grigsby, L. (2012). The electric power engineering handbook. Power system stability and control (3rd ed.). \</span>
+<span class="sd">            Boca Raton, FL: CRC Press.\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;IEEE Sub-synchronous resonance working group, Second benchmark model for computer simulation of sub-synchronous \</span>
+<span class="sd">            resonance, IEEE Transactions on Power Apparatus and Systems, vol. PAS-104, no. 5, pp. 1057-1066 (1985)\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;Kundur, P, Power System Stability and Control, Mc-Graw-Hill (1994)\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;Liwschitz, M M (1941). Positive and Negative Damping in Synchronous Machines, Electrical Engineering, \</span>
+<span class="sd">            60(5), 210-213. doi: 10.1109/EE.1941.6432110\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;Wilti, T (2000). Elecrical Machines, Drives, and Power Systems, 4th ed. Prentice Hall.\\n\\n&quot;)</span>
+<span class="sd">            md(MD.out())</span>
+<span class="sd">            </span>
+<span class="sd">        Read the following information on the `` write()`` method to see how you can </span>
+<span class="sd">        generate cells with interesting content.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Fdx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">MDFile</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">OutputFile</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">Page</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">Initial</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">PageNpop</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">EQN</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">FIG</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">spop</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">mpl_backend_</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">POPUPWINDOW_NUMBER</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">notebook</span><span class="p">,</span> <span class="n">page</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">NOTEBOOK</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MDFile</span> <span class="o">=</span> <span class="n">notebook</span><span class="o">+</span><span class="s2">&quot;.ipynb&quot;</span>
+        <span class="n">NOTEBOOK</span> <span class="o">=</span> <span class="n">notebook</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span> <span class="o">=</span> <span class="s2">&quot;tmp/</span><span class="si">%s%d</span><span class="s2">.md&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">notebook</span><span class="p">,</span> <span class="n">page</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Page</span> <span class="o">=</span> <span class="n">page</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="c1"># self.Fdx.write(&#39;&lt;a id=&quot;Page%d&quot;&gt;&lt;/a&gt;\n\n# %s\n\n&#39;%(page, title))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# </span><span class="si">%s</span><span class="s2"> #</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">title</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EQN</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FIG</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PageNpop</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">initial</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Initial</span> <span class="o">=</span> <span class="n">notebook</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Initial</span> <span class="o">=</span> <span class="n">initial</span>
+        <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpl_backend_</span> <span class="o">=</span> <span class="n">mpl</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span>
+        <span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>  <span class="c1"># Prevent showing stuff</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;pop&quot;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ff2p</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;pop&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;tmp&quot;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ff2p</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;tmp&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">toc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sa</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">POPUPWINDOW_NUMBER</span>
+        <span class="n">POPUPWINDOW_NUMBER</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;#### Table of Contents ####</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">date</span><span class="o">!=</span><span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;_</span><span class="si">%s</span><span class="s2">_</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">date</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\</span>
+<span class="s2">|Section|Title|</span><span class="se">\n\</span>
+<span class="s2">|:------|:-------|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sa</span><span class="p">:</span>
+            <span class="c1"># self.Fdx.write(&quot;|%d|%s|\n&quot;%(k,s))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;|</span><span class="si">%d</span><span class="s2">|</span><span class="si">%s</span><span class="s2">|</span><span class="se">\n</span><span class="s2">&quot;</span>
+                           <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="s1">&#39;&lt;a href=&quot;#</span><span class="si">%s</span><span class="s1">&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/a&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">),</span> <span class="n">s</span><span class="p">)))</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># self.Fdx.write(&quot;| |References|\n\n&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="nf">heading</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;**</span><span class="si">%s</span><span class="s2">** &quot;</span> <span class="o">%</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">+</span><span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">level</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">s</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">tabulatedata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">nd</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;|Parameter|Value|</span><span class="se">\n</span><span class="s2">|:---|:---|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">nd</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;SEPARATOR&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;|...|...|</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="s1">&#39;S&#39;</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sf</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">.</span><span class="si">%d</span><span class="s2">f&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">sf</span> <span class="o">%</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;|</span><span class="si">%s</span><span class="s2">|</span><span class="si">%s</span><span class="s2">|</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">weq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EQN</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">eqno</span> <span class="o">=</span> <span class="s2">&quot;`</span><span class="si">%d</span><span class="s2">.</span><span class="si">%d</span><span class="s2">`&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Page</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">EQN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> : &quot;</span> <span class="o">%</span> <span class="n">eqno</span><span class="o">+</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">eqno</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">seq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>  <span class="c1"># Set the equation number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EQN</span> <span class="o">=</span> <span class="n">n</span>
+
+    <span class="k">def</span> <span class="nf">wfig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FIG</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">figno</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Page</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FIG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&lt;i&gt;Figure </span><span class="si">%s</span><span class="s2">. </span><span class="si">%s</span><span class="s2">&lt;/i&gt;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">figno</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">figno</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setpage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>  <span class="c1"># Set the section (page) number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Page</span> <span class="o">=</span> <span class="n">n</span>
+
+    <span class="k">def</span> <span class="nf">oldwrite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<div class="viewcode-block" id="mdx.write"><a class="viewcode-back" href="../../api.html#melib.xt.mdx.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">            This is the main method to populate the MDX notebook cells.  Apart</span>
+<span class="sd">            from the code segments, the string ``s`` is copied to the markdown </span>
+<span class="sd">            file.  The code segments start with ``:::`` and end with ``::``</span>
+
+<span class="sd">            They are of the following format:</span>
+<span class="sd">                </span>
+<span class="sd">                ``:::code|arg1|arg2::``</span>
+<span class="sd">                    </span>
+<span class="sd">            where</span>
+<span class="sd">            </span>
+<span class="sd">                ``code`` a number that defines the action</span>
+<span class="sd">                </span>
+<span class="sd">                ``arg1`` the first argument</span>
+<span class="sd">                </span>
+<span class="sd">                ``arg2`` the second argument</span>
+<span class="sd">                </span>
+<span class="sd">            The following lists what is available through this construct:</span>
+<span class="sd">                </span>
+<span class="sd">            **:::2**</span>
+<span class="sd">                </span>
+<span class="sd">            ``:::2|HTML link|text::``  The markdown document will display </span>
+<span class="sd">            ``text`` that will link to the address defined in the first argument</span>
+<span class="sd">            </span>
+<span class="sd">            *Code 2 Example:*</span>
+<span class="sd">            </span>
+<span class="sd">                ``:::2|www.uq.edu.au|University of Queensland::``</span>
+<span class="sd">                </span>
+<span class="sd">            **:::3**</span>
+<span class="sd">            </span>
+<span class="sd">            ``:::3|filename|caption::`` will display the image in the first </span>
+<span class="sd">            argument.</span>
+<span class="sd">            </span>
+<span class="sd">            The image file is expected to be in the ``pics`` folder.</span>
+<span class="sd">            </span>
+<span class="sd">            The figure numbers are automatically incremented.  The </span>
+<span class="sd">            second argument is optional.  If omitted, then only the figure number </span>
+<span class="sd">            will be shown:</span>
+<span class="sd">                </span>
+<span class="sd">            *Code 3 Examples*</span>
+<span class="sd">            </span>
+<span class="sd">            ``:::3|mohrcircle.png|Mohr&#39;s circle::``  # with caption text</span>
+<span class="sd">            ``:::3|mohrcircle.png::``                # no caption</span>
+
+<span class="sd">            **:::30**</span>
+<span class="sd">            </span>
+<span class="sd">            Similar to **:::3** except that the image file is expected to be in the ``tmp`` folder.</span>
+
+<span class="sd">            **:::32**</span>
+<span class="sd">            </span>
+<span class="sd">            Similar to **:::3** except that the image file is expected to be in the ``..\\pics`` folder. </span>
+<span class="sd">            This is useful when several notebooks use the same picture collection in the parent folder.</span>
+<span class="sd">                            </span>
+<span class="sd">            **:::4**</span>
+<span class="sd">            </span>
+<span class="sd">            ``:::4|filename|cover text::`` the cover text will be a link to a pop-up window </span>
+<span class="sd">            </span>
+<span class="sd">            The image file is expected to be in the ``pics`` folder.</span>
+
+<span class="sd">            *Code 4 Examples*</span>
+<span class="sd">            </span>
+<span class="sd">            ``:::4|mohrcircle.png|Click to see Mohr&#39;s circle::``  # pop=up figure.  The second argument is the cover text.</span>
+
+<span class="sd">            **:::42**</span>
+<span class="sd">            </span>
+<span class="sd">            Similar to **:::4** except that the image file is expected to be in the ``..\\pics`` folder. </span>
+<span class="sd">            This is useful when several notebooks use the same picture collection in the parent folder.</span>
+<span class="sd">                            </span>
+<span class="sd">            **:::5**</span>
+<span class="sd">            </span>
+<span class="sd">            ``:::5|equation|equation name::`` The equation name can later be used to refer to this equation by number </span>
+<span class="sd">            by using the ``eqnumber()`` function or :::6 command.  The equation name may be left out.</span>
+
+<span class="sd">            *Code 5 Examples*</span>
+<span class="sd">            </span>
+<span class="sd">            ``:::5|$sin^2(x)+cos^2(x)=1$|trig::``</span>
+
+<span class="sd">            ``:::5|F=ma|Newton::``</span>
+
+<span class="sd">            ``:::5|$y=x^2$::``</span>
+
+<span class="sd">                            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">z</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;:&quot;</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># print(&quot;%02d: %s&quot;%(i,z))</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+                <span class="n">fnum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">sf</span> <span class="o">=</span> <span class="s2">&quot;*** Unknown MD.write code (</span><span class="si">%d</span><span class="s2">) ***&quot;</span> <span class="o">%</span> <span class="n">fnum</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">arg2</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">arg2</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Fpopup from the file MD.txt</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fpopup</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nb">vars</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fpopup</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># reference to a web site</span>
+                    <span class="n">sf</span> <span class="o">=</span> <span class="n">urlref</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">or</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">30</span> <span class="ow">or</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># show image  from pics folder</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="s2">&quot;![alt text](pics/</span><span class="si">%s</span><span class="s2"> &#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">mdxziplist</span><span class="p">([</span><span class="s2">&quot;pics</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                    <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">30</span><span class="p">:</span>  <span class="c1"># show image from the tmp folder</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="s2">&quot;![alt text](tmp/</span><span class="si">%s</span><span class="s2"> &#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="c1"># show image from ../pics folder (used in the pages)</span>
+                    <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="s2">&quot;![alt text](../pics/</span><span class="si">%s</span><span class="s2"> &#39;</span><span class="si">%s</span><span class="s2">&#39;)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">FIG</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">figno</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2">.</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Page</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FIG</span><span class="p">)</span>
+                    <span class="n">sf</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&lt;i&gt;Figure </span><span class="si">%s</span><span class="s2">. </span><span class="si">%s</span><span class="s2">&lt;/i&gt;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">figno</span><span class="p">,</span> <span class="n">arg2</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">or</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">42</span><span class="p">:</span>  <span class="c1"># image pop up (pics folder)</span>
+                    <span class="k">if</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="n">imgref</span><span class="p">(</span><span class="s2">&quot;pics/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="n">mdxziplist</span><span class="p">([</span><span class="s2">&quot;pics&quot;</span><span class="o">+</span><span class="nb">chr</span><span class="p">(</span><span class="mi">92</span><span class="p">)</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>  <span class="c1"># chr(92)=&quot;\\&quot;</span>
+                    <span class="c1"># show image from ../pics folder (used in the pages)</span>
+                    <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">42</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="n">imgref</span><span class="p">(</span><span class="s2">&quot;../pics/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="n">mdxziplist</span><span class="p">([</span><span class="s2">&quot;../pics&quot;</span><span class="o">+</span><span class="nb">chr</span><span class="p">(</span><span class="mi">92</span><span class="p">)</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>  <span class="c1"># chr(92)=&quot;\\&quot;</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>  <span class="c1"># Equation line</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">EQN</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">eqnum</span><span class="o">=</span><span class="s2">&quot;`</span><span class="si">%d</span><span class="s2">.</span><span class="si">%d</span><span class="s2">`&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Page</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">EQN</span><span class="p">)</span>
+                    <span class="n">sf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">eqnum</span><span class="o">+</span> <span class="s2">&quot; : &quot;</span> <span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+                        <span class="k">global</span> <span class="n">EQNUMS</span>
+                        <span class="n">EQNUMS</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span><span class="o">=</span><span class="n">eqnum</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Some text in fnum=5&quot;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>  <span class="c1"># Refer to the equation by number</span>
+                    <span class="n">sf</span><span class="o">=</span><span class="n">eqnumber</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>   <span class="c1"># Summary pop-up for the section below</span>
+                    <span class="n">covertext</span> <span class="o">=</span> <span class="s2">&quot;&amp;#8595&quot;</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fpopup</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">covertext</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fpopup</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">covertext</span><span class="p">)</span>
+                <span class="c1"># just pop-up text a[1]=covertext; a[2]:pop-up</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">8</span> <span class="ow">or</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">80</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fpopup</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">80</span><span class="p">:</span>
+                        <span class="n">sf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jpopup</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>  <span class="c1"># link to anchor a[1]:anchor; a[2]:cover text</span>
+                    <span class="n">sf</span> <span class="o">=</span> <span class="n">urlref</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># quote</span>
+                    <span class="n">sf</span> <span class="o">=</span> <span class="s2">&quot;&gt;&quot;</span><span class="o">+</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;&quot;</span>
+                <span class="k">elif</span> <span class="n">fnum</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span>  <span class="c1"># Heading</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">level</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">level</span> <span class="o">=</span> <span class="mi">2</span>
+                    <span class="n">sf</span> <span class="o">=</span> <span class="n">level</span><span class="o">*</span><span class="s2">&quot;#&quot;</span><span class="o">+</span><span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">note</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;i&gt;&quot;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s2">&quot;&lt;/i&gt;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">quote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s2">&quot;&quot;</span><span class="p">)</span>  <span class="c1"># The first &#39;&gt;&#39; means indent</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cite</span><span class="p">(</span><span class="n">source</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bn</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CB in debug mode</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1">#        return</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;#:</span><span class="si">%05d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">bn</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">MDFile</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Will now open the file &#39;</span><span class="si">%s</span><span class="s2">&#39; and search for &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span>
+                  <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">scb</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of z = </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z[</span><span class="si">%d</span><span class="s2">] length = </span><span class="si">%d</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">scb</span> <span class="o">+=</span> <span class="s2">&quot;``` python</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span><span class="p">)</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">:</span>
+                <span class="n">ss</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ss</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">z</span>
+            <span class="n">scb</span> <span class="o">+=</span> <span class="n">ss</span>
+        <span class="n">scb</span> <span class="o">+=</span> <span class="s2">&quot;```</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">scb</span><span class="p">)</span>
+    <span class="c1">#    return v</span>
+
+    <span class="k">def</span> <span class="nf">page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Page</span>
+
+    <span class="k">def</span> <span class="nf">out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">onesection</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">onesection</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">onesection</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Page</span><span class="p">:</span>
+            <span class="c1">#            print(onesection, self.Page)</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+        <span class="n">mpl</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mpl_backend_</span><span class="p">)</span>  <span class="c1"># Reset backend</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OutputFile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n\n\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pops</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filecontents</span><span class="p">,</span> <span class="n">linkname</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%03d%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Initial</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Page</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PageNpop</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">PageNpop</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ff2p</span><span class="p">(</span><span class="s2">&quot;pop&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="o">+</span><span class="s2">&quot;.html&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">filecontents</span><span class="p">)</span>
+        <span class="n">fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spop</span> <span class="o">=</span> <span class="s2">&quot;&lt;a href=</span><span class="se">\&quot;</span><span class="s2">./pop/</span><span class="si">%s</span><span class="s2">.html</span><span class="se">\&quot;</span><span class="s2"> onclick=</span><span class="se">\</span>
+<span class="se">\&quot;</span><span class="s2">javascript:void window.open(&#39;./pop/</span><span class="si">%s</span><span class="s2">.html&#39;,&#39;1556185057675&#39;,</span><span class="se">\</span>
+<span class="s2">&#39;width=600,height=300,toolbar=0,menubar=0,</span><span class="se">\</span>
+<span class="s2">location=0,status=1,scrollbars=0,resizable=1,left=300,top=300,fullscreen=0&#39;);</span><span class="se">\</span>
+<span class="s2">return false;</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">%s</span><span class="s2">&lt;/a&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">linkname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spop</span>
+
+    <span class="k">def</span> <span class="nf">readpoptext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tnum</span><span class="p">):</span>
+        <span class="n">textfile</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MDFile</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">textfile</span><span class="o">+</span><span class="s2">&quot;_pop.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">fdx</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">sa</span> <span class="o">=</span> <span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+    <span class="c1">#     print(n)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sa</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="c1">#         print(&quot;%d:%s&quot;%(num,sa[i+1]))</span>
+            <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="n">tnum</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">fpopup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tnum</span><span class="p">,</span> <span class="n">covertext</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]):</span>
+        <span class="k">global</span> <span class="n">POPUPWINDOW_NUMBER</span>
+        <span class="n">POPUPWINDOW_NUMBER</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;myFunction</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">POPUPWINDOW_NUMBER</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tnum</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readpoptext</span><span class="p">(</span><span class="n">tnum</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">tnum</span>
+        <span class="c1"># Now check if there are any variables:</span>
+        <span class="n">sa</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;||&quot;</span><span class="p">)</span>
+        <span class="c1"># print(sa)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+        <span class="n">sout</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="c1"># print(sa[j])</span>
+            <span class="c1">#            sout+=poptext(sa[j])</span>
+            <span class="n">sout</span> <span class="o">+=</span> <span class="n">sa</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="c1"># print(sout)</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">sout</span> <span class="o">+=</span> <span class="nb">vars</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="c1"># print(sout)</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">spopup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\</span>
+<span class="s1">&lt;html&gt;</span><span class="se">\</span>
+<span class="s1">&lt;script&gt;</span><span class="se">\</span>
+<span class="s1">function </span><span class="si">%s</span><span class="s1">() {</span><span class="se">\</span>
+<span class="s1"> var myWindow = window.open(&quot;&quot;, &quot;MsgWindow&quot;, &quot;width=300, height=300, left=50, top=300&quot;);</span><span class="se">\</span>
+<span class="s1">  myWindow.document.write(&quot;</span><span class="si">%s</span><span class="s1">&quot;);</span><span class="se">\</span>
+<span class="s1">}</span><span class="se">\</span>
+<span class="s1">&lt;/script&gt;</span><span class="se">\</span>
+<span class="s1">&lt;style&gt;</span><span class="se">\</span>
+<span class="s1">.btn {</span><span class="se">\</span>
+<span class="s1"> border:2px solid black;</span><span class="se">\</span>
+<span class="s1"> padding: 1px 1px;</span><span class="se">\</span>
+<span class="s1"> }</span><span class="se">\</span>
+<span class="s1">.info {</span><span class="se">\</span>
+<span class="s1">  border-color: #e7e7e7;</span><span class="se">\</span>
+<span class="s1">  color: dodgerblue;</span><span class="se">\</span>
+<span class="s1">}</span><span class="se">\</span>
+<span class="s1">&lt;/style&gt;</span><span class="se">\</span>
+<span class="s1">&lt;button class=&quot;btn info&quot; onclick=&quot;</span><span class="si">%s</span><span class="s1">()&quot; &gt;</span><span class="si">%s</span><span class="s1">&lt;/button&gt;&lt;/html&gt;</span><span class="se">\</span>
+<span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">function_name</span><span class="p">,</span> <span class="n">sout</span><span class="p">,</span> <span class="n">function_name</span><span class="p">,</span> <span class="n">covertext</span><span class="p">)</span>
+<span class="c1">#&lt;button class=&quot;btn info&quot;; &quot;onclick=&quot;%s()&quot; &gt;%s&lt;/button&gt;&lt;/html&gt;\</span>
+<span class="c1">#</span>
+        <span class="k">return</span> <span class="n">spopup</span>
+
+    <span class="k">def</span> <span class="nf">jpopup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tnum</span><span class="p">,</span> <span class="n">covertext</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]):</span>  <span class="c1"># This is not working</span>
+        <span class="k">global</span> <span class="n">POPUPWINDOW_NUMBER</span>
+        <span class="n">POPUPWINDOW_NUMBER</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;myFunction</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">POPUPWINDOW_NUMBER</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tnum</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readpoptext</span><span class="p">(</span><span class="n">tnum</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">tnum</span>
+        <span class="c1"># Now check if there are any variables:</span>
+        <span class="n">sa</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;||&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+        <span class="n">sout</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">sout</span> <span class="o">+=</span> <span class="n">sa</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">sout</span> <span class="o">+=</span> <span class="nb">vars</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">jaxstring</span> <span class="o">=</span> <span class="s1">&#39;&lt;script type=&quot;text/javascript&quot; async</span><span class="se">\</span>
+<span class="s1">  src=&quot;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML&quot; async&gt;</span><span class="se">\</span>
+<span class="s1">&lt;/script&gt;&#39;</span><span class="o">+</span><span class="n">sout</span>
+        <span class="n">spopup</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\</span>
+<span class="s1">&lt;html&gt;</span><span class="se">\</span>
+<span class="s1">&lt;script&gt;</span><span class="se">\</span>
+<span class="s1">function </span><span class="si">%s</span><span class="s1">() {</span><span class="se">\</span>
+<span class="s1"> var myWindow = window.open(&quot;&quot;, &quot;MsgWindow&quot;, &quot;width=300, height=300, left=50, top=300&quot;);</span><span class="se">\</span>
+<span class="s1">  myWindow.document.write(&quot;</span><span class="si">%s</span><span class="s1">&quot;);</span><span class="se">\</span>
+<span class="s1">}</span><span class="se">\</span>
+<span class="s1">&lt;/script&gt;</span><span class="se">\</span>
+<span class="s1">&lt;button onclick=&quot;</span><span class="si">%s</span><span class="s1">()&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/button&gt;&lt;/html&gt;</span><span class="se">\</span>
+<span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">function_name</span><span class="p">,</span> <span class="n">jaxstring</span><span class="p">,</span> <span class="n">function_name</span><span class="p">,</span> <span class="n">covertext</span><span class="p">)</span>
+<span class="c1">#</span>
+        <span class="k">return</span> <span class="n">spopup</span>
+
+    <span class="k">def</span> <span class="nf">fpop2spop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tnum</span><span class="p">,</span> <span class="n">covertext</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]):</span>
+        <span class="n">textfile</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MDFile</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">textfile</span><span class="o">+</span><span class="s2">&quot;_pop.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">contents</span> <span class="o">=</span> <span class="n">fdx</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">sa</span> <span class="o">=</span> <span class="n">contents</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;::&quot;</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+    <span class="c1">#     print(n)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sa</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="c1">#         print(&quot;%d:%s&quot;%(num,sa[i+1]))</span>
+            <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="n">tnum</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">sa</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="c1">#</span>
+        <span class="n">popfile</span> <span class="o">=</span> <span class="n">textfile</span><span class="o">+</span><span class="s2">&quot;pop</span><span class="si">%d</span><span class="s2">.html&quot;</span> <span class="o">%</span> <span class="n">tnum</span>
+        <span class="n">fdx</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ff2p</span><span class="p">(</span><span class="s2">&quot;pop&quot;</span><span class="p">,</span> <span class="n">popfile</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="c1"># Now check if there are any variables:</span>
+        <span class="n">sa</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;||&quot;</span><span class="p">)</span>
+        <span class="c1"># print(sa)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+        <span class="n">sout</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="c1"># print(sa[j])</span>
+            <span class="n">sout</span> <span class="o">+=</span> <span class="n">poptext</span><span class="p">(</span><span class="n">sa</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="c1"># print(sout)</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">sout</span> <span class="o">+=</span> <span class="nb">vars</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                <span class="c1"># print(sout)</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">fdx</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">poptext</span><span class="p">(</span><span class="n">sout</span><span class="p">))</span>
+        <span class="n">fdx</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spop</span> <span class="o">=</span> <span class="s2">&quot;&lt;a href=&#39;./pop/</span><span class="si">%s</span><span class="s2">&#39; onclick=</span><span class="se">\</span>
+<span class="s2">    </span><span class="se">\&quot;</span><span class="s2">javascript:void window.open(&#39;./pop/</span><span class="si">%s</span><span class="s2">&#39;,&#39;1556185057675&#39;,</span><span class="se">\</span>
+<span class="s2">    &#39;width=600,height=300,toolbar=0,menubar=0,</span><span class="se">\</span>
+<span class="s2">    location=0,status=1,scrollbars=0,resizable=1,width=600, height=300, left=300,top=300,fullscreen=0&#39;);</span><span class="se">\</span>
+<span class="s2">    return false;</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">%s</span><span class="s2">&lt;/a&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">popfile</span><span class="p">,</span> <span class="n">popfile</span><span class="p">,</span> <span class="n">covertext</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spop</span>
+
+    <span class="k">def</span> <span class="nf">fpop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tnum</span><span class="p">,</span> <span class="n">covertext</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fpop2spop</span><span class="p">(</span><span class="n">tnum</span><span class="p">,</span> <span class="n">covertext</span><span class="p">,</span> <span class="nb">vars</span><span class="o">=</span><span class="nb">vars</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wpop</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filecontents</span><span class="p">,</span> <span class="n">linkname</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pops</span><span class="p">(</span><span class="n">filecontents</span><span class="p">,</span> <span class="n">linkname</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wpop</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">wpop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">popimage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagefile</span><span class="p">,</span> <span class="n">referral</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;&lt;img src=&#39;..</span><span class="se">\\</span><span class="s2">pics</span><span class="se">\\</span><span class="si">%s</span><span class="s2">&#39;&gt;&quot;</span> <span class="o">%</span> <span class="n">imagefile</span><span class="p">,</span> <span class="n">referral</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="n">mdxziplist</span><span class="p">([</span><span class="s1">&#39;..</span><span class="se">\\</span><span class="s1">pics</span><span class="se">\\</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">imagefile</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">popfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">referral</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="p">):</span>
+            <span class="n">filename</span> <span class="o">+=</span> <span class="s2">&quot;.html&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&lt;a href=</span><span class="se">\&quot;</span><span class="s2">./pop/</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s2"> onclick=</span><span class="se">\</span>
+<span class="se">\&quot;</span><span class="s2">javascript:void window.open(&#39;./pop/</span><span class="si">%s</span><span class="s2">&#39;,&#39;1556185057675&#39;,</span><span class="se">\</span>
+<span class="s2">&#39;width=600,height=300,toolbar=0,menubar=0,</span><span class="se">\</span>
+<span class="s2">location=0,status=1,scrollbars=0,resizable=1,left=300,top=300,fullscreen=0&#39;);</span><span class="se">\</span>
+<span class="s2">return false;</span><span class="se">\&quot;</span><span class="s2">&gt;</span><span class="si">%s</span><span class="s2">&lt;/a&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">referral</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">urla</span><span class="p">,</span> <span class="n">cap</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&lt;a href=</span><span class="si">%s</span><span class="s1"> target=&quot;new&quot;&gt;</span><span class="si">%s</span><span class="s1">&lt;/a&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">urla</span><span class="p">,</span> <span class="n">cap</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">showfig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;pics&quot;</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">![alt text](</span><span class="si">%s</span><span class="s2"> &#39;</span><span class="si">%s</span><span class="s2">&#39;)</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span>
+                   <span class="p">(</span><span class="n">ff2p</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">figname</span><span class="p">),</span> <span class="n">figname</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wfig</span><span class="p">(</span><span class="n">caption</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">folder</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">mdxziplist</span><span class="p">([</span><span class="n">figname</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mdxziplist</span><span class="p">([</span><span class="n">folder</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="o">+</span><span class="n">figname</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">showplt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">figname</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="s2">&quot;tmp&quot;</span><span class="p">,</span> <span class="n">caption</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">fullname</span> <span class="o">=</span> <span class="n">ff2p</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">figname</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fullname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">![alt text](</span><span class="si">%s</span><span class="s2"> &#39;</span><span class="si">%s</span><span class="s2">&#39;)</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fullname</span><span class="p">,</span> <span class="n">figname</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wfig</span><span class="p">(</span><span class="n">caption</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">mcq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fakes</span><span class="p">,</span> <span class="n">correct</span><span class="p">,</span> <span class="n">cq</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">showanswer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dig</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pdf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">nq</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fakes</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+
+        <span class="k">def</span> <span class="nf">isfloat</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">float</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">pdfwrite</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pdf</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sapp</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cq</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">nq</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s2">&quot;MDMCQ ERROR nq=</span><span class="si">%d</span><span class="s2">, cq=</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">nq</span><span class="p">,</span> <span class="n">cq</span><span class="p">))</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%%</span><span class="s2">.</span><span class="si">%d</span><span class="s2">f </span><span class="si">%%</span><span class="s2">s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">dig</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">pdfwrite</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">showanswer</span><span class="p">:</span>
+            <span class="n">show</span> <span class="o">=</span> <span class="s2">&quot; $</span><span class="se">\\</span><span class="s2">Leftarrow$__&quot;</span>
+            <span class="n">preshow</span> <span class="o">=</span> <span class="s2">&quot;__&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">show</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">preshow</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nq</span><span class="p">):</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="s2">&quot;abcdef&quot;</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;(</span><span class="si">%s</span><span class="s2">)  &quot;</span> <span class="o">%</span> <span class="n">c</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">pdfwrite</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">cq</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">correct</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+                    <span class="n">spdf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">correct</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">preshow</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">correct</span><span class="p">,</span> <span class="n">unit</span><span class="o">+</span><span class="n">show</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">isfloat</span><span class="p">(</span><span class="n">correct</span><span class="p">):</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">preshow</span><span class="o">+</span><span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">correct</span><span class="p">,</span> <span class="n">unit</span><span class="o">+</span><span class="n">show</span><span class="p">)</span>
+                    <span class="n">spdf</span> <span class="o">=</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">correct</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">preshow</span><span class="o">+</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">correct</span><span class="p">,</span> <span class="n">unit</span><span class="o">+</span><span class="n">show</span><span class="p">)</span>
+                    <span class="n">spdf</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">correct</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">correct</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fakes</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">unit</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">isfloat</span><span class="p">(</span><span class="n">correct</span><span class="p">):</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">fmt</span> <span class="o">%</span> <span class="p">(</span><span class="n">fakes</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">unit</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fakes</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">unit</span><span class="p">)</span>
+                <span class="n">spdf</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">pdfwrite</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">spdf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">pdfwrite</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+<span class="c1"># END OF MD CLASS</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+
+
+<span class="k">def</span> <span class="nf">engfmt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">latex</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">latex</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">.</span><span class="si">%d</span><span class="s2">f </span><span class="se">\\</span><span class="s2">times 10^{</span><span class="si">%%</span><span class="s2">d}&quot;</span> <span class="o">%</span> <span class="n">d</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">.</span><span class="si">%d</span><span class="s2">f x 10&lt;sup&gt;</span><span class="si">%%</span><span class="s2">d&lt;/sup&gt;&quot;</span> <span class="o">%</span> <span class="n">d</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">latex</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">.</span><span class="si">%d</span><span class="s2">f </span><span class="se">\\</span><span class="s2">times 10^{-</span><span class="si">%%</span><span class="s2">d}&quot;</span> <span class="o">%</span> <span class="n">d</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">%%</span><span class="s2">.</span><span class="si">%d</span><span class="s2">f $</span><span class="se">\\</span><span class="s2">times$ 10&lt;sup&gt;-</span><span class="si">%%</span><span class="s2">d&lt;/sup&gt;&quot;</span> <span class="o">%</span> <span class="n">d</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+<span class="c1"># Print array elements separated by a comma</span>
+
+
+<span class="k">def</span> <span class="nf">pra</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;, &quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">fmt</span> <span class="o">%</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<span class="k">def</span> <span class="nf">cite</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot; -- &lt;cite&gt;</span><span class="si">%s</span><span class="s2">&lt;/cite&gt;&quot;</span> <span class="o">%</span> <span class="n">s</span>
+
+
+<span class="k">def</span> <span class="nf">classinfo</span><span class="p">(</span><span class="n">pythonfile</span><span class="p">,</span> <span class="n">classname</span><span class="p">,</span> <span class="n">ending</span><span class="o">=</span><span class="s2">&quot;def __in&quot;</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pythonfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;class </span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="n">classname</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;&quot;&quot;&quot;&#39;</span><span class="p">)</span>
+    <span class="c1"># q=z[1].split(ending)</span>
+    <span class="c1"># print(q)</span>
+    <span class="c1"># s=q[0].replace(&#39;&quot;&quot;&quot;&#39;,&quot;&quot;)</span>
+    <span class="k">return</span> <span class="s2">&quot;__class </span><span class="si">%s</span><span class="s2">__</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">classname</span><span class="o">+</span><span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">anyinfo</span><span class="p">(</span><span class="n">pythonfile</span><span class="p">,</span> <span class="n">sstart</span><span class="p">,</span> <span class="n">ending</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pythonfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sstart</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">ending</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">thesame</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">checksign</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">checksign</span><span class="p">:</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">0.0001</span><span class="p">)</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">percentdiff</span> <span class="o">=</span> <span class="n">diff</span><span class="o">/</span><span class="n">x</span>
+    <span class="k">if</span> <span class="n">checksign</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">percentdiff</span> <span class="o">&lt;</span> <span class="n">eps</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">percentdiff</span> <span class="o">&lt;</span> <span class="n">eps</span><span class="p">,</span> <span class="n">sign</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="c1"># Latex functions:</span>
+<span class="c1"># import quantities as pq</span>
+
+
+<span class="k">def</span> <span class="nf">createx</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">subtitle</span><span class="p">):</span>
+    <span class="n">geometry_options</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;margin&quot;</span><span class="p">:</span> <span class="s2">&quot;2cm&quot;</span><span class="p">}</span>
+    <span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">geometry_options</span><span class="o">=</span><span class="n">geometry_options</span><span class="p">)</span>
+    <span class="c1"># Add document header</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">PageStyle</span><span class="p">(</span><span class="s2">&quot;header&quot;</span><span class="p">)</span>
+    <span class="c1"># Create left header</span>
+    <span class="k">with</span> <span class="n">header</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Head</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">)):</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Date: &quot;</span><span class="p">)</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LineBreak</span><span class="p">())</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%y&quot;</span><span class="p">)))</span>
+    <span class="c1"># Create center header</span>
+    <span class="k">with</span> <span class="n">header</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Head</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)):</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;MECH2100&quot;</span><span class="p">)</span>
+    <span class="c1"># Create right header</span>
+    <span class="k">with</span> <span class="n">header</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Head</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">)):</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">simple_page_number</span><span class="p">())</span>
+    <span class="c1"># Create left footer</span>
+    <span class="k">with</span> <span class="n">header</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Foot</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">)):</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;The University of Queensland&quot;</span><span class="p">)</span>
+    <span class="c1"># Create center footer</span>
+    <span class="k">with</span> <span class="n">header</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Foot</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)):</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;2019&quot;</span><span class="p">)</span>
+    <span class="c1"># Create right footer</span>
+    <span class="k">with</span> <span class="n">header</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Foot</span><span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">)):</span>
+        <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;Assignment #1&quot;</span><span class="p">)</span>
+
+    <span class="n">doc</span><span class="o">.</span><span class="n">preamble</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="n">doc</span><span class="o">.</span><span class="n">change_document_style</span><span class="p">(</span><span class="s2">&quot;header&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Add Heading</span>
+    <span class="k">with</span> <span class="n">doc</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">MiniPage</span><span class="p">(</span><span class="n">align</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">)):</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LargeText</span><span class="p">(</span><span class="n">bold</span><span class="p">(</span><span class="n">title</span><span class="p">)))</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LineBreak</span><span class="p">())</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MediumText</span><span class="p">(</span><span class="n">bold</span><span class="p">(</span><span class="n">subtitle</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">doc</span>
+
+
+<span class="k">def</span> <span class="nf">texhdg</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Section</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">level</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Subsection</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">tapp</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">mathema</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">doc</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Math</span><span class="p">(</span><span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">savepdf</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">docfilename</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">docfilename</span><span class="o">+</span><span class="s2">&quot;.pdf&quot;</span>
+    <span class="n">oktosave</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;tempfile.pdf&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s1">&#39;tempfile.pdf&#39;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> is still open.&#39;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">oktosave</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">oktosave</span><span class="p">:</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">generate_pdf</span><span class="p">(</span><span class="n">docfilename</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="s1">&#39;pdflatex&#39;</span><span class="p">,</span> <span class="n">clean_tex</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">alignat</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">doc</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">Alignat</span><span class="p">(</span><span class="n">numbering</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">escape</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="k">as</span> <span class="n">agn</span><span class="p">:</span>
+        <span class="n">agn</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">newline</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">sapp</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Append string (&quot;&quot; string).  Single quotes within the &quot;&quot; means italicised sections</span>
+
+
+<span class="k">def</span> <span class="nf">sapp</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+    <span class="n">sa</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sa</span><span class="p">:</span>
+        <span class="n">xa</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">)</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xa</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">italic</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mathema</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="c1">#                alignat(p,y)</span>
+
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">xtver</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;4:17pm 3 June 2021&quot;</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">melib</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">melib API reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Hal Gurgenci.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

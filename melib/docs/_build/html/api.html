@@ -1,0 +1,1264 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>melib API reference &#8212; melib June 2021 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to melib’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-melib">
+<span id="melib-api-reference"></span><h1>melib API reference<a class="headerlink" href="#module-melib" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-melib.library"></span><p><strong>library.py</strong></p>
+<p>Routines to perform short mechanical engineering design tasks without explicit instantiation.</p>
+<dl class="py function">
+<dt id="melib.library.agmaI">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Np</span></em>, <em class="sig-param"><span class="n">Ng</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">Np</span></code> and <code class="docutils literal notranslate"><span class="pre">Ng</span></code> as the numbers of teeth for the pinion and
+the gear, respectively.  The returned value is the AGMA Contact Geometry
+Factor, I.  Note that I is the same for the pinion and the gear.</p>
+<p><strong>Example</strong> <code class="docutils literal notranslate"><span class="pre">agmaI(17,</span> <span class="pre">41)</span></code>–&gt;&gt; <cite>0.094356</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmaJ">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaJ</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Np</span></em>, <em class="sig-param"><span class="n">Ng</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaJ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaJ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">Np</span></code> and <code class="docutils literal notranslate"><span class="pre">Ng</span></code> as the numbers of teeth for the pinion and
+the gear, respectively.  The returned value is the AGMA Bending Geometry
+Factors, Jp and Jg, for the pinion and the gear, respectively.</p>
+<p><strong>Example</strong> <code class="docutils literal notranslate"><span class="pre">agmaJ(17,</span> <span class="pre">41)</span></code>–&gt;&gt; <cite>(0.2890, 0.3891)</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmaKB">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaKB</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">m</span></em>, <em class="sig-param"><span class="n">t</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaKB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaKB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">m</span></code> as the gear module in <cite>mm</cite> and <code class="docutils literal notranslate"><span class="pre">t</span></code> as the rim
+thickness in <cite>mm</cite>.The returned value is
+the AGMA rim thickness factor, <code class="docutils literal notranslate"><span class="pre">KB</span></code>.</p>
+<p>For solid gear blanks, use the gear pitch radius as the rim
+thickness and the function will return 1.</p>
+<p>The function will return a value less than 1 only when the rim thickness
+is low.  Modern gears can usually be designed to deliver a rim
+thickness factor of 1.0.</p>
+<p><strong>Example</strong> <code class="docutils literal notranslate"><span class="pre">agmaKB(3,25)</span></code> –&gt; <cite>1.0</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmaKR">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaKR</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaKR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaKR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">r</span></code> as the required reliability and the function will return
+the corresponding AGMA reliability factor KR.</p>
+<p><strong>Example</strong> <code class="docutils literal notranslate"><span class="pre">agmaKR(0.98)</span></code> –&gt; <cite>0.98333</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmaKm">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaKm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fw</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">gearbox</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaKm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaKm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">fw</span></code> as the face width in <cite>mm</cite>, <code class="docutils literal notranslate"><span class="pre">d</span></code> as the pinion
+diameter in <cite>mm</cite>, and the <code class="docutils literal notranslate"><span class="pre">gearbox</span></code> describing the application,
+the function returns the AGMA load distribution factor <code class="docutils literal notranslate"><span class="pre">Km</span></code>.</p>
+<p>The allowable values for the case-insensitive string <code class="docutils literal notranslate"><span class="pre">gearbox</span></code> are</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">&quot;open</span> <span class="pre">gearing&quot;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;commercial</span> <span class="pre">enclosed</span> <span class="pre">units&quot;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;precision&quot;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;extra</span> <span class="pre">precision&quot;</span></code></p>
+</div></blockquote>
+<p><strong>Example</strong> <code class="docutils literal notranslate"><span class="pre">agmaKm(80,</span> <span class="pre">160,</span> <span class="pre">&quot;commercial</span> <span class="pre">enclosed</span> <span class="pre">units&quot;)</span></code> –&gt; <cite>1.2275</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmaKo">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaKo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sdrive</span></em>, <em class="sig-param"><span class="n">sload</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaKo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaKo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">sdrive</span></code> describing the drive characteristics and <code class="docutils literal notranslate"><span class="pre">sload</span></code>
+representing the load characteristics and the function will return the
+AGMA overload factor Ko.  The acceptable values are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">sdrive</span> <span class="pre">:</span> <span class="pre">[&quot;UNIFORM&quot;,</span> <span class="pre">&quot;LIGHT</span> <span class="pre">SHOCK&quot;,</span> <span class="pre">&quot;MODERATE</span> <span class="pre">SHOCK&quot;]</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">sload</span> <span class="pre">:</span> <span class="pre">[&quot;UNIFORM&quot;,</span> <span class="pre">&quot;LIGHT</span> <span class="pre">SHOCK&quot;,</span> <span class="pre">&quot;MODERATE</span> <span class="pre">SHOCK&quot;,</span> <span class="pre">&quot;HEAVY</span> <span class="pre">SHOCK&quot;]</span></code></p>
+<p><strong>Example</strong> <code class="docutils literal notranslate"><span class="pre">agmaKo(&quot;light</span> <span class="pre">shock&quot;,</span> <span class="pre">&quot;uniform&quot;)</span></code> –&gt; <cite>1.2</cite></p>
+<p>The arguments are case-insensitive.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmaKs">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaKs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">m</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaKs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaKs" title="Permalink to this definition">¶</a></dt>
+<dd><p>”
+Call with <code class="docutils literal notranslate"><span class="pre">m</span></code> as the gear module in <cite>mm</cite> and the function will return
+the AGMA shape factor <code class="docutils literal notranslate"><span class="pre">Ks</span></code>.</p>
+<p><strong>Example</strong> <code class="docutils literal notranslate"><span class="pre">agmaKs(8)</span></code> –&gt; <cite>1.15</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmaKv">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmaKv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agmanumber</span></em>, <em class="sig-param"><span class="n">vt</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmaKv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmaKv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">agmanumber</span></code> as the AGMA quality number (e.g. “A10”) and
+<code class="docutils literal notranslate"><span class="pre">vt</span></code> as the pitch line linear velocity</p>
+<blockquote>
+<div><p>Pitch line velocity[m/s] = angular speed[rad/s] * pitch radius[m]</p>
+</div></blockquote>
+<p>The returned value is the AGMA dynamic factor <code class="docutils literal notranslate"><span class="pre">Kv</span></code></p>
+<p><strong>Example</strong> : <code class="docutils literal notranslate"><span class="pre">agmaKv(&quot;A11&quot;,</span> <span class="pre">10)</span></code> –&gt; <cite>1.582</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmastrength">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmastrength</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">h</span></em>, <em class="sig-param"><span class="n">surface</span><span class="o">=</span><span class="default_value">'none'</span></em>, <em class="sig-param"><span class="n">grade</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmastrength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmastrength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call this function with <code class="docutils literal notranslate"><span class="pre">h</span></code> as the Brinell hardness of the gear
+material and it will return the AGMA allowable bending and contact
+stress numbers for Grade 1 AGMA materials.</p>
+<p>The reference is the <cite>AGMA 2001-D04</cite>, e.g. as in Mott Figs
+9.11 and 9.12.  AGMA does not allowable extrapolation for hardness values
+above 400HB.</p>
+<dl>
+<dt><strong>Examples</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">agmastrength(400)</span></code> –&gt; <cite>(301.5, 1088.6)</cite></p>
+<p><code class="docutils literal notranslate"><span class="pre">agmastrength(600)</span></code> –&gt; <cite>(301.5, 1088.6)</cite></p>
+<p><code class="docutils literal notranslate"><span class="pre">agmastrength(300)</span></code> –&gt; <cite>(248.2, 866.6)</cite></p>
+</dd>
+</dl>
+<p>You may specify Grade 2 by using the argument <code class="docutils literal notranslate"><span class="pre">grade</span></code>, e.g.
+<code class="docutils literal notranslate"><span class="pre">agmastrength(300,</span> <span class="pre">grade=2)</span></code> returns <cite>(324.0, 959.5)</cite>.</p>
+<p>If a surface treatment is specified by using the argument <code class="docutils literal notranslate"><span class="pre">surface</span></code>,
+the strength is adjusted accordingly by using the AGMA recommendations as
+tabulated in Mott, Table 9-5.</p>
+<p>The allowable surface modifications are ‘flame hardened’ and
+‘carburised’.  The default is no surface modification.</p>
+<dl>
+<dt><strong>Examples</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">agmastrength(300,</span> <span class="pre">surface=&quot;flame</span> <span class="pre">hardened&quot;)</span></code> –&gt; <cite>(310, 1207)</cite></p>
+<p><code class="docutils literal notranslate"><span class="pre">agmastrength(300,</span> <span class="pre">surface=&quot;carburised&quot;)</span></code> –&gt; <cite>(379, 1241)</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmayn">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmayn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Nc</span></em>, <em class="sig-param"><span class="n">HB</span><span class="o">=</span><span class="default_value">400</span></em>, <em class="sig-param"><span class="n">surface</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmayn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmayn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">Nc</span></code> as tooth design life in terms of number of cycles, <code class="docutils literal notranslate"><span class="pre">HB</span></code> the
+Brinell hardness, and <code class="docutils literal notranslate"><span class="pre">surface</span></code> the surface condition.  The default surface
+condition is none; the allowable choices are “nitrided” and “case” (short for case-carburised)</p>
+<p>The returned value is the AGMA Bending Stress cycle factor, YN.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">agmayn</span><span class="p">(</span><span class="mf">1.e8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">0.9767774605590424</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.agmazn">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">agmazn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Nc</span></em>, <em class="sig-param"><span class="n">surface</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#agmazn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.agmazn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">Nc</span></code> as tooth design life in terms of number of cycles, <code class="docutils literal notranslate"><span class="pre">HB</span></code> the
+Brinell hardness, and <code class="docutils literal notranslate"><span class="pre">surface</span></code> the surface condition.  The default surface
+condition is none; the only other choice is “nitrided”</p>
+<p>The returned value is the AGMA Pitting resistance stress cycle factor, ZN.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">agmazn</span><span class="p">(</span><span class="mf">1.e8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">0.9484368889886681</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.alloyprop">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">alloyprop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">base</span></em>, <em class="sig-param"><span class="n">alloyname</span></em>, <em class="sig-param"><span class="n">props</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#alloyprop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.alloyprop" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Action</dt><dd><p>Alloy material property look up. Uses the files in the <cite>data</cite> folder.</p>
+</dd>
+<dt>Arguments</dt><dd><p><cite>x</cite> :  Xcel pointer to <cite>mats.xlsx</cite>.  See the file for supported metals.</p>
+<p><cite>base</cite> : Sheet name in <cite>matx.xlsx</cite>, e.g. <em>steel</em>, <em>alum</em>, <em>titanium</em>, <em>nickel</em></p>
+<p><cite>alloyname</cite> : Alloy designation as they appear in column C of the Excel sheet, e.g. “1350-H19”</p>
+<p><cite>props</cite> : Properties wanted as in the HEADINGS in the file, e.g. <em>[‘SUMPA’, ‘SYMPA’]</em> to get Su and Sy</p>
+</dd>
+<dt>Example</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xmat</span><span class="o">=</span><span class="n">opendatafiles</span><span class="p">(</span><span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mats&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">su</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">rho</span><span class="p">]</span><span class="o">=</span><span class="n">alloyprop</span><span class="p">(</span><span class="n">xmat</span><span class="p">,</span> <span class="s2">&quot;nickel&quot;</span><span class="p">,</span> <span class="s2">&quot;N06110&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;SUMPA&quot;</span><span class="p">,</span> <span class="s2">&quot;SYMPA&quot;</span><span class="p">,</span> <span class="s2">&quot;RHO&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">su</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">rho</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">1205.0</span> <span class="mf">1034.0</span> <span class="mf">8330.0</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.alumprop">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">alumprop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">alloyname</span></em>, <em class="sig-param"><span class="n">props</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#alumprop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.alumprop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short cut for <cite>alloyprop(x, “alum”, alloyname, props)</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.alumweldstrength">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">alumweldstrength</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">base</span></em>, <em class="sig-param"><span class="n">filler</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#alumweldstrength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.alumweldstrength" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Action</dt><dd><p>Allowable shear stresses for fillet welds on aluminium</p>
+</dd>
+<dt>Arguments</dt><dd><p><cite>base</cite> : Designation for the metal joined, e.g. <cite>1100</cite></p>
+<p><cite>filler</cite> : Filler alloy number, e.g. <cite>4043</cite></p>
+</dd>
+<dt>Return</dt><dd><p>Allowable shear stress in MPa</p>
+</dd>
+<dt>Example</dt><dd><p>&gt;&gt;&gt;alumweldstrength(6061, 5356) # returns 48.00 MPa</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.bearingpick">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">bearingpick</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">F</span></em>, <em class="sig-param"><span class="n">ncycles</span></em>, <em class="sig-param"><span class="n">xb</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cr</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">dmin</span><span class="o">=</span><span class="default_value">array([0, 0])</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#bearingpick"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.bearingpick" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function selects suitable deep groove ball bearings for a shaft
+supported by two bearings.  It picks the first bearing that satisfies
+the requirements in the <code class="docutils literal notranslate"><span class="pre">metric</span></code> sheet of the bearing data file, <code class="docutils literal notranslate"><span class="pre">bearing.xlsx</span></code></p>
+<p>The function returns a <code class="docutils literal notranslate"><span class="pre">dictionary</span></code> variable with the fields as defined
+in the examples below.</p>
+<p>The arguments to the function are:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">F</span></code> [kN] : The radial load(s). Could be one single force or
+a numpy array <code class="docutils literal notranslate"><span class="pre">[FL,</span> <span class="pre">FR]</span></code> where <code class="docutils literal notranslate"><span class="pre">FL</span></code> and <code class="docutils literal notranslate"><span class="pre">FR</span></code> are the total
+radial forces on the left and right bearings</p>
+<p><code class="docutils literal notranslate"><span class="pre">ncycles</span></code> : Required life as number of cycles</p>
+<p><strong>* Optional Arguments *</strong> :</p>
+<p><code class="docutils literal notranslate"><span class="pre">xb</span></code> : Pointer to the bearing data Excel file
+(if a different file with the same format but different data is to be used)</p>
+<p><code class="docutils literal notranslate"><span class="pre">cr</span></code> : Reliability factor. The default is 1, corresponding to an
+L10 life or 90% reliability</p>
+<p><code class="docutils literal notranslate"><span class="pre">dmin</span></code> [mm]  Minimum bore diameters, reflecting the strength
+requirement that the shaft segment diameters on the left and right
+support points cannot be less than these specified values.  The minimum
+of the two dmin values are used.  The argument can be a single number or
+a numpy array.  The default value is 0  indicating no diameter requirement.</p>
+</div></blockquote>
+<dl>
+<dt><strong>Examples</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bearingpick</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mf">2.e6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;no&#39;</span><span class="p">:</span> <span class="mi">6319</span><span class="p">,</span>        <span class="c1"># Bearing number</span>
+<span class="go">     &#39;bore&#39;: 95,        # Bore diameter, mm</span>
+<span class="go">     &#39;C&#39;: 153,          # Dynamic rating, kN</span>
+<span class="go">     &#39;rmax&#39;: 2.5,       # Maximum fillet radius</span>
+<span class="go">     &#39;dmin&#39;: 108,       # Minimum shaft shoulder diameter, mm</span>
+<span class="go">     &#39;dmax&#39;: 187,       # Maximum shaft shoulder diameter, mm</span>
+<span class="go">     &#39;mass&#39;: 5.65,      # Bearing mass, kg</span>
+<span class="go">     &#39;width&#39;: 45,       # Bearing width, mm</span>
+<span class="go">     &#39;req&#39;: 151.2,      # Required rating (calculated using F and ncycles )</span>
+<span class="go">     &#39;constraint&#39;:&#39;Load&#39; # Would be &#39;Dmin&#39; if the choice were based on diameter</span>
+<span class="go">     &#39;Co&#39;: 118          # Static rating</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bearingpick</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mf">2.e6</span><span class="p">,</span> <span class="n">dmin</span><span class="o">=</span><span class="mi">105</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">{</span><span class="s1">&#39;no&#39;</span><span class="p">:</span> <span class="mi">6226</span><span class="p">,</span>
+<span class="go">     &#39;bore&#39;: 130,</span>
+<span class="go">     &#39;C&#39;: 156,</span>
+<span class="go">     &#39;rmax&#39;: 2.5,</span>
+<span class="go">     &#39;dmin&#39;: 143,</span>
+<span class="go">     &#39;dmax&#39;: 217,</span>
+<span class="go">     &#39;mass&#39;: 5.8,</span>
+<span class="go">     &#39;width&#39;: 40,</span>
+<span class="go">     &#39;req&#39;: 151.19052598738477,</span>
+<span class="go">     &#39;constraint&#39;: &#39;Dmin&#39;,</span>
+<span class="go">     &#39;Co&#39;: 132}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.bearingrel">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">bearingrel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#bearingrel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.bearingrel" title="Permalink to this definition">¶</a></dt>
+<dd><p>The bearing reliability factor corresponding to the desired reliability</p>
+<p><code class="docutils literal notranslate"><span class="pre">r</span></code> is the desired reliability, e.g. 0.90 for an L10 life.</p>
+<dl>
+<dt><strong>Examples</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bearingrel</span><span class="p">(</span><span class="mf">0.99</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">0.21</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.bearingscf">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">bearingscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uts</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#bearingscf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.bearingscf" title="Permalink to this definition">¶</a></dt>
+<dd><img alt="_images/bearingscf.png" src="_images/bearingscf.png" />
+<p>Calculates the stress concentration factor for a bearing seat with
+a K8/k6 transition fit according to AS1403 Figure 5.  The other bearing
+fit in the AS1403 chart is not supported by this function.</p>
+<p>The returned value is the stress concentration factor as per Figure 5 of AS1403.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bearingscf</span><span class="p">(</span><span class="mi">800</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">2.08896825088</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.bmdiagram">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">bmdiagram</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">P</span></em>, <em class="sig-param"><span class="n">p</span><span class="o">=</span><span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">L</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">Q</span><span class="o">=</span><span class="default_value">array([0., 0.])</span></em>, <em class="sig-param"><span class="n">q</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">cc</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">draw</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">vlim</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">mlim</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">xlim</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">xcrit</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">yname</span><span class="o">=</span><span class="default_value">'y'</span></em>, <em class="sig-param"><span class="n">zname</span><span class="o">=</span><span class="default_value">'z'</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">fu</span><span class="o">=</span><span class="default_value">'N'</span></em>, <em class="sig-param"><span class="n">xu</span><span class="o">=</span><span class="default_value">'m'</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">debug</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#bmdiagram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.bmdiagram" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function can be used to draw the shear force and the bending moment
+diagrams and calculate the values of the bending moments in the nominated
+stress points and the reaction forces for a shaft represented as a simply
+supported beam supported by two bearings (B and C) and subject to two
+loads (P and Q) as in the following diagram:</p>
+<blockquote>
+<div><img alt="_images/bmdiagram.png" src="_images/bmdiagram.png" />
+</div></blockquote>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> = [Py, Pz] in newtons</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p</span></code> = Position of the P application point from the left end, m</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Q</span></code> = [Qy, Qz] in newtons</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">q</span></code> = Position of the Q application point from the left end, m</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">L</span></code> = The distance between the two supports, m</p></li>
+</ul>
+<p>You do not need to include <code class="docutils literal notranslate"><span class="pre">q</span></code> and <code class="docutils literal notranslate"><span class="pre">Q</span></code> if there is only one force.
+The other arguments are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">draw</span></code> : Will draw the shear force and bending moment diagrams if True</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xcrit</span></code> : Will calculate the bending moments at these positions</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code> : Will store the diagrams in the image file “filename”.png</p></li>
+</ul>
+<dl>
+<dt><strong>Examples</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">11280</span><span class="p">,</span> <span class="mf">31000.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2860.0</span><span class="p">,</span>   <span class="mi">7860</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="mf">0.185</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="mf">0.473</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="mf">0.650</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xcrit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;examplebmdiagram&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span> <span class="o">=</span> <span class="n">bmdiagram</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">draw</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">xcrit</span><span class="o">=</span><span class="n">xcrit</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>The above will create the following two image files:</p>
+<blockquote>
+<div><img alt="_images/examplebmdiagram_xy.png" src="_images/examplebmdiagram_xy.png" />
+<img alt="_images/examplebmdiagram_xz.png" src="_images/examplebmdiagram_xz.png" />
+</div></blockquote>
+<p>and will return</p>
+<blockquote>
+<div><p>M = <code class="docutils literal notranslate"><span class="pre">array</span></code> ([[ 1348.8,   199.9], [-4498.7, -2574.1]])</p>
+<p>B = <code class="docutils literal notranslate"><span class="pre">array</span></code> ([  7290.7, -24317.3])</p>
+<p>C = <code class="docutils literal notranslate"><span class="pre">array</span></code> ([  1129.3, -14542.7])</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.boltgrades">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">boltgrades</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">grade</span></em>, <em class="sig-param"><span class="n">props</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#boltgrades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.boltgrades" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Arguments</dt><dd><p><cite>x</cite> : Pointer to the bolts sheet in the materials data file</p>
+<p><cite>grade</cite> : Bolt grade, e.g. “4.8”</p>
+<p><cite>props</cite> : [“Dmin”,”Dmax”,”SUMPA”,”SYMPA”,”PROOF”] or a subset</p>
+</dd>
+<dt>Returns <cite>v</cite></dt><dd><p>v[0] = Value from the file for ‘props[0]’</p>
+<p>v[1] = Value from the file for ‘props[1]’</p>
+<p>etc</p>
+</dd>
+<dt>Example</dt><dd><p>x=opendatafiles([“mats”])[0]</p>
+<p>x.sheet(“bolts”)</p>
+<p>v=boltgrades(xmat, “4.8”, [“Dmin”, “PROOF”])</p>
+<p>print(v) # will print “[  1.6 310. ]”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.boltpitch">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">boltpitch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dmajor</span></em>, <em class="sig-param"><span class="n">coarse</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#boltpitch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.boltpitch" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Arguments</dt><dd><p><cite>dmajor</cite> : Major diameter</p>
+<p><cite>coarse</cite> : True if coarse thread; False if fine thread</p>
+</dd>
+</dl>
+<p>Returns pitch[mm] and stress area[mm2] as a tuple</p>
+<p>Example</p>
+<blockquote>
+<div><p>(pitch, At)=boltpitch(42, coarse=False) ==&gt; pitch=3, At=1206</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.density">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metal</span></em>, <em class="sig-param"><span class="n">T</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the density[kg/m3] of the metal.  The optional second argument is the temperature[ <sup>o</sup> C].
+Enter</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">thconductivity</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>to see the supported metals.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.dgbbrtfacs">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">dgbbrtfacs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">TC</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#dgbbrtfacs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.dgbbrtfacs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used in selection of a bearing subject to both radial
+and thrust loads.  As you will see in the lectures, this is an iterative
+process and this function can be called repeatedly in search of a solution.</p>
+<p>The function always returns a tuple with three components (e, TC, Y), one the same as
+the supplied value and the other two computed by the function.
+There are three arguments and only one should be specified.</p>
+<p><code class="docutils literal notranslate"><span class="pre">e</span></code> is specified.  The function computes the values of T/Co and Y from the
+bearing thrust factors table (e.g. Mott Table 14-5)</p>
+<p><code class="docutils literal notranslate"><span class="pre">TC</span></code> (representing T/Co) is specified.  The function computes e and Y</p>
+<p><code class="docutils literal notranslate"><span class="pre">Y</span></code> is specified.  The function computes T/Co and e</p>
+<dl>
+<dt><strong>Examples</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dgbbrtfacs</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="mf">0.27</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mf">0.27</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">,</span> <span class="mf">1.63</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dgbbrtfacs</span><span class="p">(</span><span class="n">TC</span><span class="o">=</span><span class="mf">0.027</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mf">0.218</span><span class="p">,</span> <span class="mf">0.027</span><span class="p">,</span> <span class="mf">2.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dgbbrtfacs</span><span class="p">(</span><span class="n">Y</span><span class="o">=</span><span class="mf">1.15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mf">0.38</span><span class="p">,</span> <span class="mf">0.28</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.ec3cutoff">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">ec3cutoff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">detail</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#ec3cutoff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.ec3cutoff" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Action</dt><dd><p>Eurocode 3 Cut-off limits for lattice girder joints as per Table 2.4 in Design Guide, Zhao et al</p>
+</dd>
+<dt>Argument</dt><dd><p><cite>detail</cite> : The Detail category from Table B.2, e.g. <cite>56</cite> for K-joint with overlap</p>
+</dd>
+<dt>Return</dt><dd><p>Cut-off limit (the life is indefinite for stress ranges below this limit)</p>
+</dd>
+<dt>Example</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ec3cutoff</span><span class="p">(</span><span class="mi">71</span><span class="p">)</span>  <span class="c1"># returns 32 MPa</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.ec3life">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">ec3life</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nomstress</span></em>, <em class="sig-param"><span class="n">tr</span></em>, <em class="sig-param"><span class="n">joint</span><span class="o">=</span><span class="default_value">'K'</span></em>, <em class="sig-param"><span class="n">overlap</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">section</span><span class="o">=</span><span class="default_value">'CHS'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#ec3life"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.ec3life" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Arguments</dt><dd><p><cite>nomstress</cite> : Nominal stress range, MPa</p>
+<p><cite>tr</cite> : Wall thickness ratio (Chord thickness divided by brace thickness)</p>
+<p><cite>joint</cite> : ‘K’ or ‘N’</p>
+<p><cite>overlap</cite> : True if overlap joint; False if joint with a gap</p>
+<p><cite>section</cite> : Not used.  Only CHS are supported</p>
+</dd>
+<dt>Returns <cite>N</cite></dt><dd><p>N[0] = Life in cycles for the thickness ratio <cite>tr</cite> as given</p>
+<p>N[1] = Life in cycles for <cite>tr</cite> as 1.0</p>
+<p>N[2] = Life in cycles for <cite>tr</cite> as 1.40</p>
+</dd>
+<dt>Example</dt><dd><p>ec3life(120.0, 1.2, joint=’N’)   # returns (80357,25866,134848) cycles</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.fixity">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">fixity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">econ</span></em>, <em class="sig-param"><span class="n">ideal</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#fixity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.fixity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the constant K in the Euler equation for
+buckling.  The arguments are</p>
+<dl>
+<dt>econ<span class="classifier">End conditions.  Could be:</span></dt><dd><p>“pinned-pinned”
+“fixed-fixed”
+“fixed-free” (or “free-fixed”)
+“fixed-pinned” (or “pinned-fixed”)</p>
+</dd>
+<dt>ideal<span class="classifier">Returns theoretical values if this True.</span></dt><dd><p>Otherwise, returns practical values</p>
+</dd>
+<dt>Example</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ka</span><span class="o">=</span><span class="n">fixity</span><span class="p">(</span><span class="s2">&quot;pinned-fixed&quot;</span><span class="p">)</span>  <span class="c1"># Actual value For pinned-fixed ends</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ki</span><span class="o">=</span><span class="n">fixity</span><span class="p">(</span><span class="s2">&quot;pinned-fixed&quot;</span><span class="p">,</span> <span class="n">ideal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Ideal value For pinned-fixed ends</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.geartip">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">geartip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dp</span></em>, <em class="sig-param"><span class="n">m</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#geartip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.geartip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <cite>dp</cite> =pitch diameter and <cite>m</cite> =module both expressed using the same units
+, e.g. mm.  The function returns the tip radius.  It is assumed that the
+addendum is equal to the module.</p>
+<p><strong>Example</strong> : <code class="docutils literal notranslate"><span class="pre">geartip(168,</span> <span class="pre">8)</span></code> –&gt; <cite>184</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.huntingteeth">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">huntingteeth</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Np</span></em>, <em class="sig-param"><span class="n">Ng</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#huntingteeth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.huntingteeth" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used by the auto marker.</p>
+<p>When the number of teeth on a pinion and the gear has common multiples,
+there may be preferential matching between gears and this would cause
+premature wear.  When called with <code class="docutils literal notranslate"><span class="pre">Np</span></code> and <code class="docutils literal notranslate"><span class="pre">Ng</span></code> as the numbers of
+teeth on the pinion and the gear, respectively, this function returns</p>
+<blockquote>
+<div><p>0 if <code class="docutils literal notranslate"><span class="pre">Ng</span></code> is an integer multiple of <code class="docutils literal notranslate"><span class="pre">Np</span></code></p>
+<p>0.5  if there is at least one common multiple, e.g. both are even numbers</p>
+<p>1 if there are no common multiples</p>
+<dl>
+<dt><strong>Examples</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">huntingteeth(23,46)</span></code> –&gt; <cite>0</cite></p>
+<p><code class="docutils literal notranslate"><span class="pre">huntingteeth(22,46)</span></code> –&gt; <cite>0.5</cite></p>
+<p><code class="docutils literal notranslate"><span class="pre">huntingteeth(23,47)</span></code> –&gt; <cite>1</cite></p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.isofits">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">isofits</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">d</span><span class="o">=</span><span class="default_value">60.0</span></em>, <em class="sig-param"><span class="n">s</span><span class="o">=</span><span class="default_value">'H7f6'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#isofits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.isofits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Look up the upper and lower limits for the hole and the shaft for the
+specified fit.  The only fits supported are</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Hxfy</span></code> with <code class="docutils literal notranslate"><span class="pre">x</span></code> = 1,2,…,11 and <code class="docutils literal notranslate"><span class="pre">y</span></code> =3,4,…,9 and 3 &lt; D &lt;= 250</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hxsy</span></code> with <code class="docutils literal notranslate"><span class="pre">x</span></code> = 1,2,…,11 and <code class="docutils literal notranslate"><span class="pre">y</span></code> =3,4,…,9 and 3 &lt; D &lt;=1250</p></li>
+</ul>
+<p>The data is read from the <code class="docutils literal notranslate"><span class="pre">fits</span></code> sheet in the <code class="docutils literal notranslate"><span class="pre">shaft.xlsx</span></code> file.</p>
+<dl>
+<dt><strong>Examples</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">isofits</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;H7f6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="o">-</span><span class="mi">49</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">isofits</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;H7s6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">72</span><span class="p">,</span> <span class="mi">53</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">isofits</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">110.0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;H7s6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">((</span><span class="mi">35</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">79</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">isofits</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;H7s6&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="ne">SystemExit</span><span class="p">:</span> <span class="n">isofits</span><span class="p">:</span> <span class="n">nominal</span> <span class="n">diameter</span> <span class="p">(</span><span class="mi">2000</span><span class="p">)</span> <span class="ow">is</span> <span class="n">too</span> <span class="n">large</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.keyseatscf">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">keyseatscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uts</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#keyseatscf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.keyseatscf" title="Permalink to this definition">¶</a></dt>
+<dd><img alt="_images/keyseatscf.png" src="_images/keyseatscf.png" />
+<p>Calculates the stress concentration factor for a sidemilled keyway with
+a H7/k6 transition fit according to AS1403 Figure 7.  The other keyways
+in the AS1403 chart are not supported by this function.</p>
+<p>The returned value is the stress concentration factor as per Figure 7 of AS1403.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keyseatscf</span><span class="p">(</span><span class="mi">650</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">1.6365625047124999</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.keysize">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">keysize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#keysize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.keysize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple (width,height) for the specified diameter, d[mm] as per
+DIN6885, T1 (and also Table 11-1 in Mott).</p>
+<p><strong>Examples</strong></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">keysize</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">keysize</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">18</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.mintoothnum">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">mintoothnum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phi</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#mintoothnum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.mintoothnum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">phi</span></code> as the pressure angle in degrees. Returns the minimum
+number of teeth allowed on the pinion to prevent interference when driving
+a rack.  The pressure angles of 14.5, 20, and 12 are supported. Reference is
+Mott, Table 8-7.</p>
+<p><strong>Example</strong> : <code class="docutils literal notranslate"><span class="pre">mintoothnum(20)</span></code> –&gt; <cite>18</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.mohrcircle">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">mohrcircle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sx</span></em>, <em class="sig-param"><span class="n">sy</span></em>, <em class="sig-param"><span class="n">txy</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">'None'</span></em>, <em class="sig-param"><span class="n">figno</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">&quot;2d Mohr's Circle&quot;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#mohrcircle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.mohrcircle" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>For the 2d stress element:</dt><dd><img alt="_images/stresselement.png" src="_images/stresselement.png" />
+</dd>
+</dl>
+<p>This function returns the two principal stresses and the maximum shear
+stress as (s1, s2, taumax) in MPa.</p>
+<p>The arguments <code class="docutils literal notranslate"><span class="pre">sx,</span> <span class="pre">sy,</span> <span class="pre">txy</span></code> are as in the figure.</p>
+<p>If a filename is provided, the Mohr’s circle is drawn into that file.</p>
+<p>Otherwise, it is drawn on the screen.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">figno</span></code> and <code class="docutils literal notranslate"><span class="pre">title</span></code> are optional.</p>
+<p><strong>Example</strong></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mohrcircle</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="n">filename</span><span class="o">=</span><span class="s2">&quot;mohrcircle.png&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;melib example&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="mf">11.60</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.602</span><span class="p">,</span> <span class="mf">8.602</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/mohrcircle.png" src="_images/mohrcircle.png" />
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.opendatafiles">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">opendatafiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tags</span><span class="o">=</span><span class="default_value">['bearing', 'mats', 'sgear', 'shaft', 'vbelt']</span></em>, <em class="sig-param"><span class="n">makezip</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#opendatafiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.opendatafiles" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Action</dt><dd><p>Opens the Excel files in the <cite>data</cite> folder and returns file pointers.</p>
+</dd>
+<dt>Arguments</dt><dd><p><cite>tags</cite> : Array of strings.
+Excel file names.  All data files will be opened if tags is unspecified.</p>
+<p><cite>makezip</cite> : Boolean.
+Whether to add the files to a zip package (used in notebooks).</p>
+</dd>
+<dt>Returns</dt><dd><p>Xcel pointers to the data files.  You may have to use these pointers when calling
+other <cite>library</cite> functions.</p>
+</dd>
+</dl>
+<p>Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">Xbear</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="n">Xgear</span><span class="p">,</span> <span class="n">Xshaft</span><span class="p">,</span> <span class="n">Xbelt</span><span class="p">]</span><span class="o">=</span><span class="n">opendatafiles</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.scf_roundbartension">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">scf_roundbartension</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">D</span></em>, <em class="sig-param"><span class="n">d</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">r</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#scf_roundbartension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.scf_roundbartension" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stress concentration factor for a stepped round bar in tension</p>
+<img alt="_images/scf_roundbartension.png" src="_images/scf_roundbartension.png" />
+<p><code class="docutils literal notranslate"><span class="pre">D,</span> <span class="pre">d,</span> <span class="pre">r</span></code> are the dimensions as in the figure above in mm.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scf_roundbartension</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">1.964</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.scfa">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">scfa</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">k1</span></em>, <em class="sig-param"><span class="n">k2</span></em>, <em class="sig-param"><span class="n">k3</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#scfa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.scfa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the combined stree concentration factors when two or three
+stress raising features coincide.  The calculation is done as per
+AS1403 Article 8.2 (d) adapted to three features.  The combined the SCF
+is the sum of the largest SCF plus 0.2 times the sum of the two lesser
+values.  For example, if <code class="docutils literal notranslate"><span class="pre">k2=max(k1,k2,k3)</span></code> , then the returned value is
+<code class="docutils literal notranslate"><span class="pre">k2+0.2*(k1+k3)</span></code> .</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scfa</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">5.0</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.shaftendur">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">shaftendur</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uts</span></em>, <em class="sig-param"><span class="n">condition</span><span class="o">=</span><span class="default_value">'ground'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#shaftendur"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.shaftendur" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call with <code class="docutils literal notranslate"><span class="pre">uts</span></code> = Tensile strength[MPa] and <code class="docutils literal notranslate"><span class="pre">condition</span></code> = a string describing
+the surface condition.  The returned value is the endurance strength
+read off the following chart:</p>
+<img alt="_images/shaftendur.png" src="_images/shaftendur.png" />
+<p>The valid options for the second argument are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'ground'</span></code> (default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'polished'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'cold</span> <span class="pre">drawn'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'machined'</span></code> (equivalent to <code class="docutils literal notranslate"><span class="pre">'cold</span> <span class="pre">drawn'</span></code> )</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'hot</span> <span class="pre">rolled'</span></code></p></li>
+</ul>
+</div></blockquote>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shaftendur</span><span class="p">(</span><span class="mi">900</span><span class="p">,</span><span class="s1">&#39;hot rolled&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">212.5</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.shaftreliability">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">shaftreliability</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rel</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#shaftreliability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.shaftreliability" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">rel</span></code> is the desired target reliability, e.g. 0.10 for 10%</p>
+<p>The returned value is the reliability factor <code class="docutils literal notranslate"><span class="pre">CR</span></code></p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shaftreliability</span><span class="p">(</span><span class="mf">0.99</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">0.81</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.shoulderscf">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">shoulderscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">D</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">R</span></em>, <em class="sig-param"><span class="n">uts</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#shoulderscf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.shoulderscf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the stress concentration factor for a shaft shoulder according to
+AS1403.</p>
+<blockquote>
+<div><img alt="_images/shoulderscf.png" src="_images/shoulderscf.png" />
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">D,</span> <span class="pre">d,</span> <span class="pre">R</span></code> are the dimensions as shown in the figure above.</p>
+<p><code class="docutils literal notranslate"><span class="pre">uts</span></code> is the tensile strength in MPa.</p>
+<p>The returned value is the stress concentration factor as per AS1403.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shoulderscf</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">1.6973600000014022</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.shrinkscf">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">shrinkscf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">uts</span></em>, <em class="sig-param"><span class="n">record</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#shrinkscf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.shrinkscf" title="Permalink to this definition">¶</a></dt>
+<dd><img alt="_images/shrinkscf.png" src="_images/shrinkscf.png" />
+<p>Calculates the stress concentration factor for a component fitted onto a
+shaft using a H7/s6 interference fit, according to Figure 6 of AS1403.
+The other two fits in the AS1403 chart are not supported by this function.</p>
+<p>The returned value is the stress concentration factor as per Figure 6 of AS1403.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">shrinkscf</span><span class="p">(</span><span class="mi">400</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">1.6204761921599997</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.sizefactor">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">sizefactor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dia</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#sizefactor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.sizefactor" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">dia</span></code> is the shaft diameter in mm</p>
+<p>The returned value is the size factor <code class="docutils literal notranslate"><span class="pre">CS</span></code> read off a digitised
+version of the Mott chart Fig 5-9.</p>
+<dl>
+<dt><strong>Example</strong></dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sizefactor</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">0.6964150943396226</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.steelprop">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">steelprop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">alloyname</span></em>, <em class="sig-param"><span class="n">props</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#steelprop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.steelprop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short cut for <cite>alloyprop(x, “STEELS”, alloyname, props)</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.thconductivity">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">thconductivity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metal</span></em>, <em class="sig-param"><span class="n">T</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#thconductivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.thconductivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the thermal conductivity[W/m-C] of the metal.  The second argument is the temperature[ <sup>o</sup> C].
+Enter</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">thconductivity</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>to see the supported metals.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.titanprop">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">titanprop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">alloyname</span></em>, <em class="sig-param"><span class="n">props</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#titanprop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.titanprop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short cut for <cite>alloyprop(x, “titanium”, alloyname, props)</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.unitconvert">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">unitconvert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fromunit</span></em>, <em class="sig-param"><span class="n">tounit</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#unitconvert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.unitconvert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the coefficient to convert a number from one unit to another.  For example,</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">=</span><span class="n">x</span><span class="o">*</span><span class="n">unitconvert</span><span class="p">(</span><span class="s2">&quot;Calories_per_Cm2Min&quot;</span><span class="p">,</span><span class="s2">&quot;W_per_M2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>will convert ‘x’ in units of ‘Cal/(cm2-min)’ to ‘y’ in ‘Watts/m2’.</p>
+<p>The supported unit pairs are:</p>
+<ul class="simple">
+<li><p>“Calories_per_Cm2Min” —&gt; “W_per_M2”</p></li>
+<li><p>“Grams_per_Dm2Hr”     —&gt; “Kg_per_M2H”</p></li>
+<li><p>“Lbf_inch”            —&gt; “N-m”</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.vbeltc1">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">vbeltc1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">d</span></em>, <em class="sig-param"><span class="n">D</span></em>, <em class="sig-param"><span class="n">C</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#vbeltc1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.vbeltc1" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Arguments</dt><dd><p><cite>x</cite> : Xcel pointer to the belts data file</p>
+<p><cite>d</cite> : Diameter of the driving pulley[mm]</p>
+<p><cite>D</cite> : Diameter of the driven pulley[mm]</p>
+<p><cite>C</cite> : Centre distance[mm]</p>
+</dd>
+</dl>
+<p>Returns</p>
+<blockquote>
+<div><p>[1] = Wrap angle beta (for the driving sheave - see Optibelt catalogue p.73)</p>
+<p>[2] = Arc contact correction factor c1 (Optibelt Catalogue Table 22)</p>
+</div></blockquote>
+<p>Example</p>
+<blockquote>
+<div><p>x=opendatafiles([“vbelt”])[0]</p>
+<p>v=vbeltc1(x, 75, 230, 420)</p>
+<p>print(v) # will print “(156.0, 0.99)”</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.vbeltlengths">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">vbeltlengths</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">beltdes</span><span class="o">=</span><span class="default_value">'5V'</span></em>, <em class="sig-param"><span class="n">datumlength</span><span class="o">=</span><span class="default_value">673.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#vbeltlengths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.vbeltlengths" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Arguments</dt><dd><p><cite>x</cite> : Xcel pointer to the belts data file</p>
+<p><cite>beltdes</cite> : Belt designation, e.g. “3V” or “5V”</p>
+<p><cite>datumlength</cite> : Length target for the belt, mm</p>
+</dd>
+</dl>
+<p>Returns values read from Optibelt Catalogue Table 25</p>
+<blockquote>
+<div><p>[1] = Belt designation, e.g. “3V 1060”</p>
+<p>[2] = Outside length[mm] of this belt designation</p>
+<p>[3] = Length factor, c3</p>
+</div></blockquote>
+<p>Example</p>
+<blockquote>
+<div><p>x=opendatafiles([“vbelt”])[0]</p>
+<p>v=vbeltlengths(x, “5V”, 673.0)</p>
+<p>print(v) # will print “(‘5V 500’, 1270, 0.84)”</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.vbeltpower">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">vbeltpower</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">beltdes</span><span class="o">=</span><span class="default_value">'5V'</span></em>, <em class="sig-param"><span class="n">rpm</span><span class="o">=</span><span class="default_value">3000</span></em>, <em class="sig-param"><span class="n">dsheave</span><span class="o">=</span><span class="default_value">100.0</span></em>, <em class="sig-param"><span class="n">rat</span><span class="o">=</span><span class="default_value">2.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#vbeltpower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.vbeltpower" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Arguments</dt><dd><p><cite>x</cite> : Xcel pointer to the belts data file</p>
+<p><cite>beltdes</cite> : Belt designation, e.g. “3V” or “5V”</p>
+<p><cite>rpm</cite> : Speed of the driving pulley[rpm]</p>
+<p><cite>dsheave</cite> : Diameter of the driving pulley[mm]</p>
+<p><cite>rat</cite> : Speed reduction across this belt transmission stage</p>
+</dd>
+</dl>
+<p>Returns values read from Optibelt Table 41(beltdes=3V) or 43(beltdes=5V)</p>
+<blockquote>
+<div><p>[1] = PN(Nominal rating,kW) from Optibelt Catalogue Table 41(for 3V) or 43(for 5V)</p>
+<p>[2] = Additional power per belt from Optibelt Catalogue Tables 41 or 43(3V or 5V)</p>
+</div></blockquote>
+<p>Example</p>
+<blockquote>
+<div><p>x=opendatafiles([“vbelt”])[0]</p>
+<p>v=vbeltpower(x, “5V”, rpm=3000, dsheave=100.0, rat=2.0)</p>
+<p>print(v) # will print “(24.98, 4.47)”</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.library.weldsize">
+<code class="sig-prename descclassname">melib.library.</code><code class="sig-name descname">weldsize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/library.html#weldsize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.library.weldsize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the minimum weld size[mm] for plate thickness ‘t’[mm]</p>
+<dl class="simple">
+<dt>Argument</dt><dd><p><cite>t</cite> : Plate thickness in mm</p>
+</dd>
+<dt>Returns</dt><dd><p>The minimum weld size[mm] recommended for this plate thickness</p>
+</dd>
+<dt>Example:</dt><dd><p>weldsize(18.0) # returns 6.35 mm</p>
+</dd>
+</dl>
+<p>Reference: Mott, Table 20-4 Minimum weld sizes for thick plates</p>
+</dd></dl>
+
+<span class="target" id="module-melib.xt"></span><p><strong>xt.py</strong></p>
+<p>Routines to create markdown documents for Jupyter notebooks, PDF files, and some other useful stuff</p>
+<dl class="py function">
+<dt id="melib.xt.imgplot">
+<code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">imgplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span></em>, <em class="sig-param"><span class="n">XXYY</span></em>, <em class="sig-param"><span class="n">cs</span><span class="o">=</span><span class="default_value">'b-'</span></em>, <em class="sig-param"><span class="n">imgfile</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">xticks</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">yticks</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#imgplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.imgplot" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>This function is used to superimpose my curve on a chart image from
+a reference.  The image should be the box only.</p>
+<p><code class="docutils literal notranslate"><span class="pre">X</span></code> , <code class="docutils literal notranslate"><span class="pre">Y</span></code>   The data to be plotted (the same units as on the chart image)</p>
+<p><code class="docutils literal notranslate"><span class="pre">XXYY</span></code>        The axis limits [[xmin, xmax], [ymin, ymax]] (from the reference image)</p>
+<p><code class="docutils literal notranslate"><span class="pre">cs</span></code>          Plot line descriptor, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;b--&quot;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">imgfile</span></code>     The name of the output, e.g. <code class="docutils literal notranslate"><span class="pre">r&quot;pics\Meshram_Fig6b.png&quot;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ax</span></code>          This should not be included at first call.  It is used to add curves later.</p>
+<p><code class="docutils literal notranslate"><span class="pre">xticks</span></code>      x-axis tick positions you want to see, e.g. [“4000”, “midpoint”, “26000”]</p>
+<p><code class="docutils literal notranslate"><span class="pre">yticks</span></code>      y-axis tick positions, e.g. [“ten”, “forty”, “seventy”, “hundred”]</p>
+<p>The function returns <code class="docutils literal notranslate"><span class="pre">(figno,</span> <span class="pre">ax)</span></code>. 
+The <code class="docutils literal notranslate"><span class="pre">ax</span></code> can be used to add more y(x) curves:</p>
+<blockquote>
+<div><p>e.g. imgplot(X2, Y2, XXYY, “r–”, ax=ax)</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">XXYY</span></code> in the second call should be the same as in the first</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ax</span></code> in the second call is the same ‘ax’ returned by the first call</p>
+</div></blockquote>
+<p>The <code class="docutils literal notranslate"><span class="pre">figno</span></code> can be used by the calling figure to save or to clear the figure</p>
+</div></blockquote>
+<p><strong>Example</strong></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">XXYY</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">50000.0</span><span class="p">)],</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span> <span class="o">=</span> <span class="n">imgplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">XXYY</span><span class="p">,</span> <span class="n">cs</span><span class="o">=</span><span class="s1">&#39;r-&#39;</span><span class="p">,</span><span class="n">imgfile</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;ashby_strength_density_chart_no_axes.png&quot;</span><span class="p">,</span><span class="n">xticks</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;mid&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">10000</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imgplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">2.0</span><span class="p">),</span> <span class="n">XXYY</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">imgplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">XXYY</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This example draws lines on the following reference chart:</p>
+<blockquote>
+<div><img alt="_images/ashby_strength_density_chart.png" src="_images/ashby_strength_density_chart.png" />
+</div></blockquote>
+<p>To create the following plot:</p>
+<blockquote>
+<div><img alt="_images/imgplot.png" src="_images/imgplot.png" />
+</div></blockquote>
+</dd></dl>
+
+<dl class="py class">
+<dt id="melib.xt.mdx">
+<em class="property">class </em><code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">mdx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">notebook</span></em>, <em class="sig-param"><span class="n">page</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">initial</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#mdx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.mdx" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">mdx</span></code> is a pointer to a markdown file.  I use it in creating lecture
+notes.  A typical notebook have an iniialisation cell and then several
+chapter cells.</p>
+<p>The structures for these cells are given below.  Create a notebook 
+named “XXXX.ipynb” and copy and paste the following code segments 
+into that notebook as separate cells to create an example notebook 
+generated using the <code class="docutils literal notranslate"><span class="pre">mdx</span></code> class.</p>
+<p><strong>Why should you use `` mdx `` ?</strong></p>
+<p>I found it clumsy to create markdown files with interactive live 
+python code snippets in it when using standard markdown only.</p>
+<p>Using the class <code class="docutils literal notranslate"><span class="pre">mdx</span></code>, all cells in the notebook 
+can be code cells and the whole notebook can run as a single program.</p>
+<p>The cell contents are created by using the <code class="docutils literal notranslate"><span class="pre">mdx.write()</span></code> method.  There 
+are special codes starting with <code class="docutils literal notranslate"><span class="pre">:::</span></code> that can indicate headers, equations, 
+insert images, and many other things.  See the write-up for the <code class="docutils literal notranslate"><span class="pre">write</span></code> 
+method.</p>
+<p><strong>Initialisation Cell</strong></p>
+<p>This will be the first cell in the <code class="docutils literal notranslate"><span class="pre">ipynb</span></code> file and it will have the 
+following structure.  This is initialisation for a notebook with three chapter
+cells and one reference cell at the end.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Markdown</span> <span class="k">as</span> <span class="n">md</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span>
+<span class="c1"># import other packages as required</span>
+<span class="c1"># ...</span>
+<span class="c1"># ...</span>
+<span class="n">Chapter</span><span class="o">=</span><span class="s2">&quot;XXXX&quot;</span>  <span class="c1"># or any other name</span>
+<span class="n">YEAR</span><span class="o">=</span><span class="mi">2021</span>
+<span class="n">TOC</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Chapter 1&quot;</span><span class="p">,</span> <span class="s2">&quot;Chapter 2&quot;</span><span class="p">,</span> <span class="s2">&quot;Chapter 3&quot;</span><span class="p">,</span> <span class="s2">&quot;References&quot;</span><span class="p">]</span>
+<span class="c1">#</span>
+<span class="n">SECTION</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">MAKEZIP</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># A zip file will be generated  (False otherwise)</span>
+<span class="c1">#</span>
+<span class="c1"># Module libraries</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;H:\My Documents\python&quot;</span><span class="p">)</span>  <span class="c1"># provide full path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;H:\My Documents\melib_project\melib&quot;</span><span class="p">)</span>  <span class="c1"># provide full path</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">xt</span> <span class="kn">import</span> <span class="n">mdx</span><span class="p">,</span> <span class="n">engfmt</span><span class="p">,</span> <span class="n">mdxzipopen</span><span class="p">,</span> <span class="n">mdzip</span><span class="p">,</span> <span class="n">iswindows</span><span class="p">,</span> <span class="n">openplot</span><span class="p">,</span> <span class="n">plotanno</span>
+<span class="kn">from</span> <span class="nn">excel</span> <span class="kn">import</span> <span class="n">Xcel</span>
+<span class="n">LIBFILES</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;xt.py&quot;</span><span class="p">,</span> <span class="s2">&quot;library.py&quot;</span><span class="p">,</span> <span class="s2">&quot;excel.py&quot;</span><span class="p">]</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="n">MAKEZIP</span><span class="p">:</span> <span class="n">mdxzipopen</span><span class="p">(</span><span class="n">Chapter</span><span class="p">,</span> <span class="n">LIBFILES</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">MD</span><span class="o">=</span><span class="n">mdx</span><span class="p">(</span><span class="n">Chapter</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example Notebook&quot;</span><span class="p">)</span>  <span class="c1"># The markdown file pointer</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Created on 6 April 2021.   Last Update - &quot;</span><span class="o">+</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">/%m/%Y&quot;</span><span class="p">))</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">toc</span><span class="p">(</span><span class="n">TOC</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>  <span class="c1"># Creates the table contents</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;* The notebook source file is `</span><span class="si">%s</span><span class="s2">.ipynb`&quot;</span><span class="o">%</span><span class="n">Chapter</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="n">md</span><span class="p">(</span><span class="n">MD</span><span class="o">.</span><span class="n">out</span><span class="p">())</span>  <span class="c1"># End of the initiation segment</span>
+</pre></div>
+</div>
+<p>The following is what you need to generate an HTML page from this notebook.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">jupyter</span> <span class="n">nbconvert</span> <span class="n">XXXX</span><span class="o">.</span><span class="n">ipynb</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="nb">input</span> <span class="o">--</span><span class="n">to</span> <span class="n">html</span>
+</pre></div>
+</div>
+<p><strong>Chapter 1</strong></p>
+<p>This is the first chapter in the notebook following the initial cell. 
+All contents will be inserted using the <code class="docutils literal notranslate"><span class="pre">MD.write()</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECTION</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">MD</span><span class="o">=</span><span class="n">mdx</span><span class="p">(</span><span class="n">Chapter</span><span class="p">,</span> <span class="n">SECTION</span><span class="p">,</span> <span class="n">TOC</span><span class="p">[</span><span class="n">SECTION</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># create the chapter file</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;... blah blah blah :::&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;... even more blah blah blah :::&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="n">MD</span><span class="o">.</span><span class="n">out</span><span class="p">())</span>            <span class="c1"># close the chapter file</span>
+</pre></div>
+</div>
+<p><strong>Chapter 2</strong></p>
+<p>This is the second chapter in the notebook following the initial cell. 
+All contents will be inserted using the <code class="docutils literal notranslate"><span class="pre">MD.write()</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECTION</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">MD</span><span class="o">=</span><span class="n">mdx</span><span class="p">(</span><span class="n">Chapter</span><span class="p">,</span> <span class="n">SECTION</span><span class="p">,</span> <span class="n">TOC</span><span class="p">[</span><span class="n">SECTION</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># create the chapter file</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;... blah blah blah :::&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;... even more blah blah blah :::&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="n">MD</span><span class="o">.</span><span class="n">out</span><span class="p">())</span>            <span class="c1"># close the chapter file</span>
+</pre></div>
+</div>
+<p><strong>Chapter 3</strong></p>
+<p>This is the third chapter in the notebook following the initial cell. 
+All contents will be inserted using the <code class="docutils literal notranslate"><span class="pre">MD.write()</span></code> function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SECTION</span><span class="o">+=</span><span class="mi">1</span>
+<span class="n">MD</span><span class="o">=</span><span class="n">mdx</span><span class="p">(</span><span class="n">Chapter</span><span class="p">,</span> <span class="n">SECTION</span><span class="p">,</span> <span class="n">TOC</span><span class="p">[</span><span class="n">SECTION</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># create the chapter file</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;... blah blah blah :::&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;... even more blah blah blah :::&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="n">MD</span><span class="o">.</span><span class="n">out</span><span class="p">())</span>            <span class="c1"># close the chapter file</span>
+</pre></div>
+</div>
+<p>One can have an arbitrary number of chapters.  It is preferred to 
+complete with one last segment on references:</p>
+<p><strong>The last content cell that contains the bibliography (optional)</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SECTION</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">TOC</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">=</span><span class="n">mdx</span><span class="p">(</span><span class="n">Chapter</span><span class="p">,</span> <span class="n">SECTION</span><span class="p">,</span> <span class="n">TOC</span><span class="p">[</span><span class="n">SECTION</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Anderson, P., Fouad, A., John Wiley &amp; Sons, publisher, Institute of Electrical Electronics Engineers, &amp;             IEEE Xplore , distributor. (2002). Power system control and stability (2nd ed., IEEE Press power engineering series).             Piscataway, New Jersey: IEEE Press</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Grigsby, L. (2012). The electric power engineering handbook. Power system stability and control (3rd ed.).             Boca Raton, FL: CRC Press.</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;IEEE Sub-synchronous resonance working group, Second benchmark model for computer simulation of sub-synchronous             resonance, IEEE Transactions on Power Apparatus and Systems, vol. PAS-104, no. 5, pp. 1057-1066 (1985)</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Kundur, P, Power System Stability and Control, Mc-Graw-Hill (1994)</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Liwschitz, M M (1941). Positive and Negative Damping in Synchronous Machines, Electrical Engineering,             60(5), 210-213. doi: 10.1109/EE.1941.6432110</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MD</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Wilti, T (2000). Elecrical Machines, Drives, and Power Systems, 4th ed. Prentice Hall.</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="n">MD</span><span class="o">.</span><span class="n">out</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Read the following information on the `` write()`` method to see how you can 
+generate cells with interesting content.</p>
+<dl class="py method">
+<dt id="melib.xt.mdx.write">
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#mdx.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.mdx.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main method to populate the MDX notebook cells.  Apart
+from the code segments, the string <code class="docutils literal notranslate"><span class="pre">s</span></code> is copied to the markdown 
+file.  The code segments start with <code class="docutils literal notranslate"><span class="pre">:::</span></code> and end with <code class="docutils literal notranslate"><span class="pre">::</span></code></p>
+<p>They are of the following format:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">:::code|arg1|arg2::</span></code></p>
+</div></blockquote>
+<p>where</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">code</span></code> a number that defines the action</p>
+<p><code class="docutils literal notranslate"><span class="pre">arg1</span></code> the first argument</p>
+<p><code class="docutils literal notranslate"><span class="pre">arg2</span></code> the second argument</p>
+</div></blockquote>
+<p>The following lists what is available through this construct:</p>
+<p><strong>:::2</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::2|HTML</span> <span class="pre">link|text::</span></code>  The markdown document will display 
+<code class="docutils literal notranslate"><span class="pre">text</span></code> that will link to the address defined in the first argument</p>
+<p><em>Code 2 Example:</em></p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">:::2|www.uq.edu.au|University</span> <span class="pre">of</span> <span class="pre">Queensland::</span></code></p>
+</div></blockquote>
+<p><strong>:::3</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::3|filename|caption::</span></code> will display the image in the first 
+argument.</p>
+<p>The image file is expected to be in the <code class="docutils literal notranslate"><span class="pre">pics</span></code> folder.</p>
+<p>The figure numbers are automatically incremented.  The 
+second argument is optional.  If omitted, then only the figure number 
+will be shown:</p>
+<p><em>Code 3 Examples</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::3|mohrcircle.png|Mohr's</span> <span class="pre">circle::</span></code>  # with caption text
+<code class="docutils literal notranslate"><span class="pre">:::3|mohrcircle.png::</span></code>                # no caption</p>
+<p><strong>:::30</strong></p>
+<p>Similar to <strong>:::3</strong> except that the image file is expected to be in the <code class="docutils literal notranslate"><span class="pre">tmp</span></code> folder.</p>
+<p><strong>:::32</strong></p>
+<p>Similar to <strong>:::3</strong> except that the image file is expected to be in the <code class="docutils literal notranslate"><span class="pre">..\pics</span></code> folder. 
+This is useful when several notebooks use the same picture collection in the parent folder.</p>
+<p><strong>:::4</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::4|filename|cover</span> <span class="pre">text::</span></code> the cover text will be a link to a pop-up window</p>
+<p>The image file is expected to be in the <code class="docutils literal notranslate"><span class="pre">pics</span></code> folder.</p>
+<p><em>Code 4 Examples</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::4|mohrcircle.png|Click</span> <span class="pre">to</span> <span class="pre">see</span> <span class="pre">Mohr's</span> <span class="pre">circle::</span></code>  # pop=up figure.  The second argument is the cover text.</p>
+<p><strong>:::42</strong></p>
+<p>Similar to <strong>:::4</strong> except that the image file is expected to be in the <code class="docutils literal notranslate"><span class="pre">..\pics</span></code> folder. 
+This is useful when several notebooks use the same picture collection in the parent folder.</p>
+<p><strong>:::5</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::5|equation|equation</span> <span class="pre">name::</span></code> The equation name can later be used to refer to this equation by number 
+by using the <code class="docutils literal notranslate"><span class="pre">eqnumber()</span></code> function or :::6 command.  The equation name may be left out.</p>
+<p><em>Code 5 Examples</em></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::5|$sin^2(x)+cos^2(x)=1$|trig::</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::5|F=ma|Newton::</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">:::5|$y=x^2$::</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.xt.mdxzipclose">
+<code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">mdxzipclose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#mdxzipclose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.mdxzipclose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do not use this function.
+It adds double back slash to the zip list file and it confuses zip file creation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.xt.mdxziplist">
+<code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">mdxziplist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#mdxziplist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.mdxziplist" title="Permalink to this definition">¶</a></dt>
+<dd><p>It adds <cite>files</cite> to the zip listfile (see mdzip())</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>files (string array): Names of files to archive, e.g. <cite>[“xt.py”, “datmats.xlsx”]</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.xt.mdxzipopen">
+<code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">mdxzipopen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">notebook</span></em>, <em class="sig-param"><span class="n">libfiles</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#mdxzipopen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.mdxzipopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the zip file list and insert the ‘libfiles’ into it</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>notebook : Usually the name of the notebook but could be any string, e.g. “L20”
+libfiles : File names as an array of strings, e.g. [“xt.py”, “excel.py”]</p>
+</dd>
+</dl>
+<p>The name of the list file will be <cite>notebook+”_zip.txt”</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.xt.mdzip">
+<code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">mdzip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zipfile</span></em>, <em class="sig-param"><span class="n">listfile</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#mdzip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.mdzip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a zip archive of all components used in the notebook</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>zipfile  : The name of the zip file to be created
+listfile : The text file containing the file names to be archived (optional)</p>
+</dd>
+<dt>For example,</dt><dd><p>mdzip(“L10”) – Will archive the list in “L10_zip.txt” into “L10.zip” 
+mdzip(“xxxx”, “zzzz.txt”) – Will archive the list in “zzzz.txt” into “xxxx.zip”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.xt.openplot">
+<code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">openplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">figno</span></em>, <em class="sig-param"><span class="n">aspect</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#openplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.openplot" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Arguments</dt><dd><p><cite>figno</cite> : Figure numbers</p>
+<p><cite>aspect</cite> : Aspect ratio, e.g. 0.5 for a rectangle width=2*height</p>
+</dd>
+</dl>
+<p>Returns (f1, ax)</p>
+<blockquote>
+<div><p>f1 = Pointer to the figure (can be used to save the figure, e.g. f1.savefig(“myfigure.png”)</p>
+<p>ax = Pointer to the plot axes (use this to plot, e.g. ax.plot((x, y, “r”, label=”Y”)))</p>
+</div></blockquote>
+<p><strong>Example</strong></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">f1</span><span class="p">,</span><span class="n">ax</span><span class="p">)</span><span class="o">=</span><span class="n">openplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s2">&quot;m&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;sine&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plotanno</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;X variable&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;sin(x)&quot;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">grid</span><span class="o">=</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">legendloc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example - y=sin(x)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="melib.xt.plotanno">
+<code class="sig-prename descclassname">melib.xt.</code><code class="sig-name descname">plotanno</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">xlabel</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">ylabel</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">xlim</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">ylim</span><span class="o">=</span><span class="default_value">[]</span></em>, <em class="sig-param"><span class="n">grid</span><span class="o">=</span><span class="default_value">'on'</span></em>, <em class="sig-param"><span class="n">legendloc</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/melib/xt.html#plotanno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#melib.xt.plotanno" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>For the matplotlib figure axis pointer <code class="docutils literal notranslate"><span class="pre">ax</span></code>:</dt><dd><p>Add axis labels (<code class="docutils literal notranslate"><span class="pre">xlabel</span></code> and <code class="docutils literal notranslate"><span class="pre">ylabel</span></code> )
+Axis limits, e.g. <code class="docutils literal notranslate"><span class="pre">xlim</span></code> (=``[xmin, xmax]`` )
+Location for the legend , eg “upper right”
+Turn the grid lines on and off
+and a figure title</p>
+</dd>
+</dl>
+<p><strong>Example</strong></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">f1</span><span class="p">,</span><span class="n">ax</span><span class="p">)</span><span class="o">=</span><span class="n">openplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="s2">&quot;m&quot;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;sine&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plotanno</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;X variable&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;sin(x)&quot;</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">9</span><span class="p">],</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">grid</span><span class="o">=</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="n">legendloc</span><span class="o">=</span><span class="s2">&quot;upper right&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Example - y=sin(x)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<span class="target" id="module-melib.excel"></span><p><strong>excel.py</strong></p>
+<p>Methods that are used in <code class="docutils literal notranslate"><span class="pre">melib</span></code> to read, edit and generate <code class="docutils literal notranslate"><span class="pre">excel</span></code> files</p>
+<p>The data folder has design data that are needed by the functions in the library.py file.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">melib</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">melib API reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to melib’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Hal Gurgenci.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/api.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
