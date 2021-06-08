@@ -155,5 +155,31 @@ Simply press the `Next` button to get to
 Then click on the `Build version` button.  When the `Build` is finished, click
 on the `View docs` button.
 
+Unfortunately, this did not work.  The document generator failed to import my
+files `library`, `xt`, and `excel` and issued the following warnings:
 
-The documentation is created: http://hgdemo.readthedocs.io/
+```
+WARNING: autodoc: failed to import module 'library' from module 'melib'; the following exception was raised:
+No module named 'numpy'
+WARNING: autodoc: failed to import module 'xt' from module 'melib'; the following exception was raised:
+No module named 'pylatex'
+WARNING: autodoc: failed to import module 'excel' from module 'melib'; the following exception was raised:
+No module named 'openpyxl'
+looking for now-outdated files... none found
+```
+This was a surprise because I tested the use of a `requirements.txt` in a
+simpler package, `hgdemo`.  There, `ReadtheDocs` managed to import a module that \
+referenced `numpy` after I included a `requirements.txt` file with a `numpy` line.
+
+This approach did not work for `melib`.
+
+I decided to try an approach suggested in http://blog.rtwilson.com/how-to-make-your-sphinx-documentation-compile-with-readthedocs-when-youre-using-numpy-and-scipy/.  The suggestion is to include the following code at the top of the `conf.py` file:
+```
+import mock
+
+MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate']
+for mod_name in MOCK_MODULES:
+  sys.modules[mod_name] = mock.Mock()
+```
+
+If all works well, the documentation will be created on http://hgdemo.readthedocs.io/
