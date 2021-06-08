@@ -12,9 +12,7 @@
 # from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 #
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-import math
+from openpyxl.styles.borders import Border
 import sys
 # from xt import thesame
 

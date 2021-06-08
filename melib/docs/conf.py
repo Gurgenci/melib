@@ -22,7 +22,7 @@ MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.inte
 'pylatex.Document', 'pylatex.Section', 'pylatex.Subsection',  'pylatex.Math',  \
     'pylatex.Alignat', 'pylatex.MiniPage', 'pylatex.LargeText', 'pylatex.LineBreak', \
     'pylatex.MediumText', 'pylatex.PageStyle', 'pylatex.Head', 'pylatex.simple_page_number', 'pylatex.Foot',
-    'openpyxl.styles.PatternFill', 'openpyxl.styles.Border', 'openpyxl.styles.Side', 'openpyxl.styles.Alignment', 'openpyxl.styles.Protection',
+    'openpyxl.styles.PatternFill', 'openpyxl.styles.borders', 'openpyxl.styles.Side', 'openpyxl.styles.Alignment', 'openpyxl.styles.Protection',
     'openpyxl.utils.cell.coordinate_from_string', 'openpyxl.utils.cell.column_index_from_string',
     'openpyxl.load_workbook', 'openpyxl.Workbook'
                 ]
