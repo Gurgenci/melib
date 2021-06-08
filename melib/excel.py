@@ -13,6 +13,7 @@
 #
 import numpy as np
 from openpyxl.styles.borders import Border, Side
+from openpyxl.drawing.image import Image
 import sys
 # from xt import thesame
 
@@ -589,7 +590,7 @@ class Xcel:
             print("Failed to save "+filename)
             return False
     def addimage(self, picfile, row, column=1):
-        img=openpyxl.drawing.image.Image(picfile)
+        img=Image(picfile)
         img.anchor(self.ws.cell(row=row, column=column)) # upper right corner of the image
         self.ws.add_image(img)
 
