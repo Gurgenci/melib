@@ -19,10 +19,12 @@ import mock
  
 MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate', 
                 'pylatex', 
-'pylatex.Document', 'pylatex.Section', 'pylatex.Subsection',  'pylatex.Math',  \
-    'pylatex.Alignat', 'pylatex.MiniPage', 'pylatex.LargeText', 'pylatex.LineBreak', \
+'pylatex.Document', 'pylatex.Section', 'pylatex.Subsection',  'pylatex.Math',  
+    'pylatex.Alignat', 'pylatex.MiniPage', 'pylatex.LargeText', 'pylatex.LineBreak', 
     'pylatex.MediumText', 'pylatex.PageStyle', 'pylatex.Head', 'pylatex.simple_page_number', 'pylatex.Foot',
+    'openpyxl.styles',
     'openpyxl.styles.PatternFill', 'openpyxl.styles.borders', 'openpyxl.styles.Side', 'openpyxl.styles.Alignment', 'openpyxl.styles.Protection',
+    'openpyxl.styles.Font',
     'openpyxl.utils.cell.coordinate_from_string', 'openpyxl.utils.cell.column_index_from_string',
     'openpyxl.load_workbook', 'openpyxl.Workbook',
     'openpyxl.worksheet.datavalidation'
