@@ -12,7 +12,7 @@
 # from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 #
 import numpy as np
-from openpyxl.styles.borders import Border
+from openpyxl.styles.borders import Border, Side
 import sys
 # from xt import thesame
 
