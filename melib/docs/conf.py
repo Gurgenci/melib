@@ -21,7 +21,10 @@ MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.inte
                 'pylatex', 'openpyxl',
 'pylatex.Document', 'pylatex.Section', 'pylatex.Subsection',  'pylatex.Math',  \
     'pylatex.Alignat', 'pylatex.MiniPage', 'pylatex.LargeText', 'pylatex.LineBreak', \
-    'pylatex.MediumText', 'pylatex.PageStyle', 'pylatex.Head', 'pylatex.simple_page_number', 'pylatex.Foot'                
+    'pylatex.MediumText', 'pylatex.PageStyle', 'pylatex.Head', 'pylatex.simple_page_number', 'pylatex.Foot',
+    'openpyxl.styles.PatternFill', 'openpyxl.styles.Border', 'openpyxl.styles.Side', 'openpyxl.styles.Alignment', 'openpyxl.styles.Protection',
+    'openpyxl.utils.cell.coordinate_from_string', 'openpyxl.utils.cell.column_index_from_string',
+    'openpyxl.load_workbook', 'openpyxl.Workbook'
                 ]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
