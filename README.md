@@ -135,8 +135,25 @@ numpy>=1.0
 pylatex>=1.0
 openpyxl>=1.0
 ```
+Now add this file to the `git` repository:
+
+`git add -A`<br>
+`git commit -am 'with the new file requirements.txt'`<br>
+`git push -u origin main`
 
 * Log in to `ReadtheDocs.org`
-* Import a repository (melib)
+* Import a repository (melib should appear as an available option)
+The import click will invoke the following menu.
+
+
+![alt text](assets/rtd01.png)
+
+Simply press the `Next` button to get to
+
+![alt text](assets/rtd02.png)
+
+Then click on the `Build version` button.  When the `Build` is finished, click
+on the `View docs` button.
+
 
 The documentation is created: http://hgdemo.readthedocs.io/
