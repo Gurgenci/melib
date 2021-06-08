@@ -4,7 +4,8 @@
     Routines to create markdown documents for Jupyter notebooks, PDF files, and some other useful stuff
 """
 
-from pylatex.utils import italic, bold
+import pylatex
+#from pylatex.utils import italic, bold
 from datetime import date
 from pylatex import Document, Section, Subsection, Tabular, Math, TikZ, Axis, \
     Plot, Figure, Matrix, Alignat, Quantity, MiniPage, LargeText, LineBreak, \
@@ -1264,9 +1265,9 @@ def createx(title, subtitle):
 
     # Add Heading
     with doc.create(MiniPage(align='c')):
-        doc.append(LargeText(bold(title)))
+        doc.append(LargeText(pylatex.utils.bold(title)))
         doc.append(LineBreak())
-        doc.append(MediumText(bold(subtitle)))
+        doc.append(MediumText(pylatex.utils.bold(subtitle)))
     return doc
 
 
@@ -1323,7 +1324,7 @@ def sapp(p, s):
                 if (i % 2) == 0:
                     p.append(y)
                 else:
-                    p.append(italic(y+" "))
+                    p.append(pylatex.utils.italic(y+" "))
             else:
                 mathema(p, y)
 #                alignat(p,y)

@@ -177,9 +177,28 @@ I decided to try an approach suggested in http://blog.rtwilson.com/how-to-make-y
 ```
 import mock
 
-MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate']
+MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate',
+                'pylatex', 'openpyxl']
 for mod_name in MOCK_MODULES:
-  sys.modules[mod_name] = mock.Mock()
+    sys.modules[mod_name] = mock.Mock()
 ```
+This made the `No module named 'pylatex'` and similar messages disappear from the `raw log`.
+But the documentation still did not include anything on `library`, `xt` and `excel` contents.
+
+I then realised that it is not enough to _mock_ a package but you need to _mock_
+every module you import from it.  For example, for `pylatex.utils` you get
+```
+No module named 'pylatex.utils'; 'pylatex' is not a package
+```
+
+
+
+
+Incidentally, when you do a `rebuild` in ReadtheDocs, you must make sure that ReadtheDocs
+is project database is updated with your latest `git push`.  Otherwise, `Build Docs`
+will fail and it is an ugly process to recover from it.  So make sure that the
+time since last built is as you expect it:
+
+![alt text](assets/rtd03.png)
 
 If all works well, the documentation will be created on http://hgdemo.readthedocs.io/
