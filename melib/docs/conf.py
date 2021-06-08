@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 import mock
  
 MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate', 
-                'pylatex', 'openpyxl'
+                'pylatex', 'openpyxl',
 'pylatex.Document', 'pylatex.Section', 'pylatex.Subsection',  'pylatex.Math',  \
     'pylatex.Alignat', 'pylatex.MiniPage', 'pylatex.LargeText', 'pylatex.LineBreak', \
     'pylatex.MediumText', 'pylatex.PageStyle', 'pylatex.Head', 'pylatex.simple_page_number', 'pylatex.Foot'                
