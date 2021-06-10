@@ -179,7 +179,7 @@ import mock
 
 MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate',
                 'pylatex', 'openpyxl',
-                'pylatex.Document', 
+                'pylatex.Document',
                 ]
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
@@ -192,7 +192,9 @@ every module you import from it.  For example, for `pylatex.utils` you get
 ```
 No module named 'pylatex.utils'; 'pylatex' is not a package
 ```
-
+All packages and its sub-packages must be added to the 'MOCK-MODULES' in `conf.py`.
+The objects imported from those packages do not need to be included in `MOCK-MODULES`.
+For example, if `'pylatex.utils' in MOCK_MODULES`, then the line `from openpyxl.utils import get_column_letter` is safe.  However, `from openpyxl.utils.cell import coordinate_from_string` is not acceptable.  One needs to add `openpyxl.utils.cell` to `MOCK_MODULES`
 
 
 
