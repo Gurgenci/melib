@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+melib/__init__.py
+melib/excel.py
+melib/library.py
+melib/xt.py
+melib.egg-info/PKG-INFO
+melib.egg-info/SOURCES.txt
+melib.egg-info/dependency_links.txt
+melib.egg-info/top_level.txt

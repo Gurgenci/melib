@@ -37,12 +37,14 @@
 <span class="sd">    Routines to create markdown documents for Jupyter notebooks, PDF files, and some other useful stuff</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">pylatex.utils</span> <span class="kn">import</span> <span class="n">italic</span><span class="p">,</span> <span class="n">bold</span>
+<span class="kn">import</span> <span class="nn">pylatex</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="c1">#from pylatex.utils import italic, bold</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
-<span class="kn">from</span> <span class="nn">pylatex</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">Section</span><span class="p">,</span> <span class="n">Subsection</span><span class="p">,</span> <span class="n">Tabular</span><span class="p">,</span> <span class="n">Math</span><span class="p">,</span> <span class="n">TikZ</span><span class="p">,</span> <span class="n">Axis</span><span class="p">,</span> \
-    <span class="n">Plot</span><span class="p">,</span> <span class="n">Figure</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">,</span> <span class="n">Alignat</span><span class="p">,</span> <span class="n">Quantity</span><span class="p">,</span> <span class="n">MiniPage</span><span class="p">,</span> <span class="n">LargeText</span><span class="p">,</span> <span class="n">LineBreak</span><span class="p">,</span> \
-    <span class="n">MediumText</span><span class="p">,</span> <span class="n">PageStyle</span><span class="p">,</span> <span class="n">Head</span><span class="p">,</span> <span class="n">simple_page_number</span><span class="p">,</span> <span class="n">Foot</span>
-<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+<span class="c1"># from pylatex import Document, Section, Subsection, Tabular, Math, TikZ, Axis, \</span>
+<span class="c1">#     Plot, Figure, Matrix, Alignat, Quantity, MiniPage, LargeText, LineBreak, \</span>
+<span class="c1">#     MediumText, PageStyle, Head, simple_page_number, Foot</span>
+<span class="c1"># import matplotlib.image as mpimg</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -396,7 +398,7 @@
         <span class="n">y</span> <span class="o">=</span> <span class="n">y2</span><span class="o">-</span><span class="p">(</span><span class="n">Y2</span><span class="o">-</span><span class="n">Y</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">Y2</span><span class="o">-</span><span class="n">Y1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">y2</span><span class="o">-</span><span class="n">y1</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ax</span> <span class="o">==</span> <span class="p">[]:</span>
-        <span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">imgfile</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">imgfile</span><span class="p">)</span>
         <span class="n">f1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">f1</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
@@ -582,17 +584,10 @@
 <span class="sd">        </span>
 <span class="sd">            SECTION=len(TOC)</span>
 <span class="sd">            MD=mdx(Chapter, SECTION, TOC[SECTION-1])</span>
-<span class="sd">            MD.write(&quot;Anderson, P., Fouad, A., John Wiley &amp; Sons, publisher, Institute of Electrical Electronics Engineers, &amp; \</span>
-<span class="sd">            IEEE Xplore , distributor. (2002). Power system control and stability (2nd ed., IEEE Press power engineering series). \</span>
-<span class="sd">            Piscataway, New Jersey: IEEE Press\\n\\n&quot;)</span>
-<span class="sd">            MD.write(&quot;Grigsby, L. (2012). The electric power engineering handbook. Power system stability and control (3rd ed.). \</span>
-<span class="sd">            Boca Raton, FL: CRC Press.\\n\\n&quot;)</span>
-<span class="sd">            MD.write(&quot;IEEE Sub-synchronous resonance working group, Second benchmark model for computer simulation of sub-synchronous \</span>
-<span class="sd">            resonance, IEEE Transactions on Power Apparatus and Systems, vol. PAS-104, no. 5, pp. 1057-1066 (1985)\\n\\n&quot;)</span>
-<span class="sd">            MD.write(&quot;Kundur, P, Power System Stability and Control, Mc-Graw-Hill (1994)\\n\\n&quot;)</span>
-<span class="sd">            MD.write(&quot;Liwschitz, M M (1941). Positive and Negative Damping in Synchronous Machines, Electrical Engineering, \</span>
-<span class="sd">            60(5), 210-213. doi: 10.1109/EE.1941.6432110\\n\\n&quot;)</span>
-<span class="sd">            MD.write(&quot;Wilti, T (2000). Elecrical Machines, Drives, and Power Systems, 4th ed. Prentice Hall.\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;Robert L. Mott, MECH2100 Machine Design (Custom Edition)\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;Ashby, M.F., 2011.   Materials selection in mechanical design, Butterworth-Heinemann, Oxford, OX ; Boston, MA . \</span>
+<span class="sd">            (Electronic resource, Call Number:TA403.6 .A74 2011eb )\\n\\n&quot;)</span>
+<span class="sd">            MD.write(&quot;Standards Australia, 1993.  Engineering Drawing Handbook SAA HB7, Standards Association of Australia, (Call Number:T357 .M43 1993 )\\n\\n&quot;)</span>
 <span class="sd">            md(MD.out())</span>
 <span class="sd">            </span>
 <span class="sd">        Read the following information on the `` write()`` method to see how you can </span>
@@ -1297,9 +1292,9 @@
 
     <span class="c1"># Add Heading</span>
     <span class="k">with</span> <span class="n">doc</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">MiniPage</span><span class="p">(</span><span class="n">align</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">)):</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LargeText</span><span class="p">(</span><span class="n">bold</span><span class="p">(</span><span class="n">title</span><span class="p">)))</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LargeText</span><span class="p">(</span><span class="n">pylatex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">bold</span><span class="p">(</span><span class="n">title</span><span class="p">)))</span>
         <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">LineBreak</span><span class="p">())</span>
-        <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MediumText</span><span class="p">(</span><span class="n">bold</span><span class="p">(</span><span class="n">subtitle</span><span class="p">)))</span>
+        <span class="n">doc</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MediumText</span><span class="p">(</span><span class="n">pylatex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">bold</span><span class="p">(</span><span class="n">subtitle</span><span class="p">)))</span>
     <span class="k">return</span> <span class="n">doc</span>
 
 
@@ -1356,7 +1351,7 @@
                 <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">italic</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="p">))</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pylatex</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">italic</span><span class="p">(</span><span class="n">y</span><span class="o">+</span><span class="s2">&quot; &quot;</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">mathema</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="c1">#                alignat(p,y)</span>
