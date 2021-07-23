@@ -6,10 +6,10 @@
 """
 # excel
 # import openpyxl
-# from openpyxl import load_workbook, Workbook
-# from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection
-# from openpyxl.styles import Font, colors, Color
-# from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection
+from openpyxl.styles import Font, colors, Color
+from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 #
 import numpy as np
 from openpyxl.styles.borders import Border, Side

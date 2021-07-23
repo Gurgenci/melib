@@ -120,7 +120,7 @@ This completes the local documentation.  Let us now generate a `github` reposito
 __IMPORTANT__ Make sure you import the `mock` repository.  Otherwise, `./make html`
 will not work after we do the mock imports of the next section below.  In VS Code
 _Powershell_ terminal, enter `py -m pip install mock` and it will install `mock`
-in the python kernel that is used by VS Code.  Incidentally, `py -m pip` is 
+in the python kernel that is used by VS Code.  Incidentally, `py -m pip` is
 always better than just `pip` because it makes sure that the packe is imported into
 the python kernek you are using.  Otherwise, confusion may occur when you have multiple
 python versions installed on your computer.
@@ -247,6 +247,51 @@ the token file name was `C:\Users\e4hgurge\.pypirc`
 * If you are using VS Code, refresh the folder pane contents to see the changes.
 * Now run `twine` to upload these two files to TestPyPi:
   * `py -m twine upload --repository testpypi dist/*`
-
 This worked.  Now let us do the same for PyPi:
 * `py -m twine upload dist/*`
+This sometime gives `HTTPError: 400 Bad Request ...`
+Even when you change your version, this sometimes happens.
+* `py -m twine upload --skip-existing dist/*` sometimes works.
+# Including the data files in PyPi upload #
+https://packaging.python.org/guides/using-manifest-in/ lists the following files as those included in a source distribution by default:
+* all Python and C source files
+* files specified in `scripts_setup()`, `package_data`, and `data_files setup()`
+*  `license_file` and `license_files` as specified in `setup.cfg`
+* all files `test/test*.py`, `setup.py` and/or `setup.cfg`
+* `README.md` and some other `README` extensions, and
+* `MANIFEST.in`. 
+I have a `data` directory with five Excel files.  I tried a few things to include them in the PyPi distribution and the following addition to `setup.cfg` worked:
+```
+[options.data_files]
+data = melib/data/mats.xlsx, melib/data/bearing.xlsx, melib/data/sgear.xlsx, melib/data/shaft.xlsx,melib/data/vbelt.xlsx
+```
+I included the files all one line and with no spaces after the commas.  But I do not think this matters.  Incidentally, using wild cars like `melib/data/*.xlsx` ibstead of listing all five files separately did not work.
+# Final Steps #
+* Go to the root directory of the package
+* `git status`
+* `git add -A`
+* `git commit -am "Final Commit for the version 1.0.0 following the pypi upload"`
+* `git push -u origin main`
+* Log in to https://readthedocs.org/dashboard/ and clock on the project `melib`
+* Click on [Build Version] after making sure that the last built is the one you
+just `push`ed.  The only way you can tell is by the time (e.g. `3 minutes ago`).
+Refresh the page if necessary.
+* Documentation will be created on https://melib.readthedocs.io
+# Additional issues #
+## PyPi Upload Failure ##
+I have already mentioned the occasional error message:
+```
+HTTPError: 400 Bad Request from https://upload.pypi.org/legacy/
+File already exists. See https://pypi.org/help/#file-name-reuse for more information.
+```
+This happens when I fail to change the version number in `setup.cfg` (for example, if I try to upload version 1.0.11 again).  When I change the version number (e.g. 1.0.12), I occasionally still get the same error.  Deleting the `dist` and `melib.egg-info` folders before the `build` work in such circumstances.  At the end, I get into the habit of deleting the `dist` and `melib.eff-info` folders after every upload - just in case.
+## PIP Failure ##
+Sometimes, `pip` decides not to download the new version.  It says that the version I have is already current and no update is needed.  In such instances, deleting the local version always work.
+
+I have two python installations: one was generated when I installed `anaconda` and the other through `VS code`.  They are in two separate `site-packages` folders:
+* `...\Anaconda3\Lib\site-packages` and
+* `...\.julia\conda\3\Lib\site-packages`
+
+I delete both `melib` folders in both of them because I read somewhere that sometimes `pip` decides to save on communications bandwidth and installs a local version of the library rather than going to `PyPi`.  I have not experienced it (I think) but I playe it safe just in case. 
+# VS Code and spyder #
+Finally, I do all `PyPi` builds and `twine` uploading in `VS Code` and then go to `spyder`, `pip` the new `melib` library and test it there.  I hardly use `python` in `VS Code`.  

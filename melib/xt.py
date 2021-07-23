@@ -8,9 +8,11 @@ import pylatex
 import matplotlib
 #from pylatex.utils import italic, bold
 from datetime import date
-# from pylatex import Document, Section, Subsection, Tabular, Math, TikZ, Axis, \
-#     Plot, Figure, Matrix, Alignat, Quantity, MiniPage, LargeText, LineBreak, \
-#     MediumText, PageStyle, Head, simple_page_number, Foot
+from pylatex import Document, PageStyle, Head, LineBreak, simple_page_number,\
+Foot, MiniPage, LargeText, MediumText, Section, Subsection, Math, Alignat
+#, , , Tabular, , TikZ, Axis, \
+#     Plot, Figure, Matrix, , Quantity, , , \
+#     
 # import matplotlib.image as mpimg
 import math
 import numpy as np
@@ -789,7 +791,8 @@ class mdx:
                         sf = "![alt text](../pics/%s '%s')" % (a[1], a[1])
                     self.FIG += 1
                     figno = "%d.%d" % (self.Page, self.FIG)
-                    sf += "\n\n<i>Figure %s. %s</i>\n\n" % (figno, arg2)
+                    if arg2!="NONE":
+                        sf += "\n\n<i>Figure %s. %s</i>\n\n" % (figno, arg2)
                 elif fnum == 4 or fnum == 42:  # image pop up (pics folder)
                     if fnum == 4:
                         sf = imgref("pics/%s" % a[1], a[2])
@@ -805,7 +808,6 @@ class mdx:
                     if len(a)==3:
                         global EQNUMS
                         EQNUMS[a[2]]=eqnum
-                    print("Some text in fnum=5")
                 elif fnum == 6:  # Refer to the equation by number
                     sf=eqnumber(a[1])
                     print(sf)
@@ -1327,4 +1329,4 @@ def sapp(p, s):
         i += 1
 
 def xtver():
-    return "4:17pm 3 June 2021"
+    return "4:04 pm 20 July 2021"
