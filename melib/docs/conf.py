@@ -26,7 +26,7 @@ MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.inte
     'openpyxl.styles.PatternFill', 'openpyxl.styles.borders', 'openpyxl.styles.Alignment', 
     'openpyxl.styles.Font','openpyxl.drawing.image',
     'openpyxl.utils.cell.coordinate_from_string', 'openpyxl.utils.cell.column_index_from_string',
-    'openpyxl.load_workbook', 'openpyxl.Workbook',
+    'openpyxl.load_workbook', 'openpyxl.Workbook','openpyxl.utils.cell',
     'openpyxl.worksheet.datavalidation'
                 ]
 for mod_name in MOCK_MODULES:
